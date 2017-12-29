@@ -39,16 +39,22 @@ export default class Config extends Component {
 
     onSubmitInfo(data) {
         const { auth } = this.state;
-        debugger;
-        axios.post('https://us-east1-projects-twitch-extension.cloudfunction.net/broadcastSaveData', {
-            data,
-            auth
+        axios({
+            method: 'POST',
+            url: 'https://localhost:3001/projects-twitch-extension/us-central1/fetchBroadcasterGithubInfo',
+            data: {
+                data,
+                auth
+            },
+            headers: {
+                'x-extension-jwt': auth.token,
+            }
         }).then(function (response) {
             console.log(response);
-          })
-          .catch(function (error) {
+        })
+        .catch(function (error) {
             console.log(error);
-          });
+        });
     }
 
     render() {

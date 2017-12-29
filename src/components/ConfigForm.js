@@ -15,11 +15,6 @@ const InnerForm = ({
             <Field type="text" name="username" placeholder="Github Username" />
         </div>
         {touched.username && errors.username && <div>{errors.username}</div>}
-        <legend>Your Repositories</legend>
-        <div className={'mui-textfield'}>
-            <Field type="text" name="repo" placeholder="talk2megooseman/github-project-extension" />
-        </div>
-        {touched.repo&& errors.repo&& <div>{errors.repo}</div>}
         <button type="submit" disabled={isSubmitting} className={'mui-btn mui-btn--primary mui-btn--raised'}>
             Submit
         </button>
@@ -42,11 +37,11 @@ const MyForm = withFormik({
             errors.username = 'Invalid username';
         }
 
-        if (
-            !/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}\/[A-Z0-9.-]+$/i.test(values.repo)
-        ) {
-            errors.repo = 'Invalid Repository Name';
-        }
+        // if (
+        //     !/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}\/[A-Z0-9.-]+$/i.test(values.repo)
+        // ) {
+        //     errors.repo = 'Invalid Repository Name';
+        // }
         return errors;
     },
     // Submission handler
