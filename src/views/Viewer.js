@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import styled from "styled-components";
+import axios from "axios";
+import Loader from "../components/Loader";
 
 import MockData from "../mock-response.json";
 
@@ -94,14 +96,45 @@ const LanguageText = styled.div`
 `
 
 export default class Viewer extends Component {
-    state = {};
+    state = {
+        loading: true,
+    };
 
     componentDidMount() {
-        this.setState(MockData);
+        window.Twitch.ext.onAuthorized( (auth) => {
+            console.log(auth);
+            this.setState({
+                auth
+            }, () => this._getViewPanelData() );
+        });
+    }
+
+    async _getViewPanelData() {
+        const { auth } = this.state;
+
+        if (!auth) return;
+
+        try {
+            let response = await axios({
+                method: 'GET',
+                url: 'https://localhost:3001/projects-twitch-extension/us-central1/viewBroadcasterData',
+                headers: {
+                    'x-extension-jwt': auth.token,
+                }
+            });
+            
+            this.setState({
+                loading: false,
+                ...response.data
+            });
+
+        } catch (error) {
+            console.log(error); 
+        }        
     }
 
     _projectRows() {
-        let {repos} = this.state;
+        let { repos } = this.state;
         if (!repos) {
             return 'No repos added in';
         }
@@ -130,21 +163,35 @@ export default class Viewer extends Component {
         return (
             <HeroProjectContainer>
                 <ProfileImageContainer>
-                    <img src={`${user.avatar_url}&s=30`} alt="avatar"/>
+                    <img src={`${user.github_user.avatar_url}&s=30`} alt="avatar"/>
                 </ProfileImageContainer>
-                <UsernameText>{user.login}</UsernameText>
+                <UsernameText>{user.github_user.login}</UsernameText>
             </HeroProjectContainer>
         );
     }
 
+    _displayContent() {
+        if (this.state.loading) {
+            return(
+                <Container>
+                    <Loader />
+                </Container>
+            );
+        } else {
+            return (
+                <Container>
+                    {this._heroSection()}
+                    <ProjectList>
+                        {this._projectRows()}
+                    </ProjectList>
+                </Container>
+            );
+        }
+    }
+
     render() {
         return(
-            <Container>
-                {this._heroSection()}
-                <ProjectList>
-                    {this._projectRows()}
-                </ProjectList>
-            </Container>
+            this._displayContent()
         );
     }
 }

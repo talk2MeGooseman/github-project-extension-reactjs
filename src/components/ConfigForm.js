@@ -14,7 +14,7 @@ const InnerForm = ({
         <div className={'mui-textfield'}>
             <Field type="text" name="username" placeholder="Github Username" />
         </div>
-        {touched.username && errors.username && <div>{errors.username}</div>}
+        {touched.username && errors.username && <div className="mui--bg-danger mui--text-white">{errors.username}</div>}
         <button type="submit" disabled={isSubmitting} className={'mui-btn mui-btn--primary mui-btn--raised'}>
             Submit
         </button>
