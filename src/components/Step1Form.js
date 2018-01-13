@@ -47,7 +47,7 @@ const MyForm = withFormik({
     // Submission handler
     handleSubmit: (values, { props, setSubmitting, setErrors /* setValues, setStatus, and other goodies */,}
     ) => {
-        props.onSubmitInfo(values);
+        props.onSubmit(values);
         setSubmitting(false);
     //   LoginToMyApp(values).then(
     //     user => {
