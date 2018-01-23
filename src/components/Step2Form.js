@@ -73,7 +73,7 @@ const MainForm = ({
 function _displaySaveConfirmation() {
     // initialize modal element
     var modalEl = document.createElement('div');
-    modalEl.innerHTML = '<div style="padding-top: 25%;height: 100%;" class="mui--align-middle mui--text-center"><h1>Saved</h1></div>';
+    modalEl.innerHTML = '<div style="padding-top: 25%;height: 100%;" class="mui--align-middle mui--text-center"><h1>Submitting...</h1></div>';
     modalEl.style.width = '400px';
     modalEl.style.height = '300px';
     modalEl.style.margin = '100px auto';
@@ -81,6 +81,10 @@ function _displaySaveConfirmation() {
 
     // show modal
     window.mui.overlay('on', modalEl);
+}
+
+function _hideOverlay() {
+    window.mui.overlay('off');   
 }
 
 // Wrap our form with the using withFormik HoC
@@ -126,6 +130,7 @@ const MyForm = withFormik({
     handleSubmit: async (values, { props, setSubmitting, setErrors /* setValues, setStatus, and other goodies */,}
     ) => {
         setSubmitting(true);
+        _displaySaveConfirmation();
         let formData = {
             selected_repos: [],
             avatar_url: values.avatar_url,
@@ -141,12 +146,10 @@ const MyForm = withFormik({
 
         if (formData.selected_repos.length > 0) {
             let success = await props.onSubmit(formData);
-            if (success) {
-                _displaySaveConfirmation();
-            }
         } else {
             setErrors({ select: 'Must select at least one Github Project'});           
         }
+        _hideOverlay();
         setSubmitting(false);
     }
   })(MainForm);

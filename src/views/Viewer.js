@@ -44,8 +44,9 @@ export default class Viewer extends Component {
 
 
     render() {
+        let {user, repos, loading } = this.state;
         return(
-            <GithubProjectsPanel />
+            <GithubProjectsPanel user={user} repos={repos} loading={loading} />
         );
     }
 }

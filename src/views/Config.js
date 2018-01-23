@@ -6,9 +6,11 @@ import GithubProjectsPanel from "../components/GithubProjectsPanel";
 import Step1Form from "../components/Step1Form";
 import Loader from '../components/Loader';
 import Step2Form from '../components/Step2Form';
+import Step3Form from '../components/Step3Form';
 
 const STEP_1 = 1;
 const STEP_2 = 2;
+const STEP_3 = 3;
 
 const Container = styled.div`
     width: 100vw;
@@ -52,7 +54,7 @@ const HeaderTable = styled.table`
         width: 10%;
     }
 `;
-export default class Config extends Component {
+class Config extends Component {
     state = {
         auth: {},
         loading: true,
@@ -64,6 +66,8 @@ export default class Config extends Component {
 
         this._goBack = this._goBack.bind(this);
         this._goStep2 = this._goStep2.bind(this);
+        this._goStep3 = this._goStep3.bind(this);
+        this._onStep3Submit = this._onStep3Submit.bind(this);
     }
 
     componentDidMount() {
@@ -87,11 +91,19 @@ export default class Config extends Component {
             });
 
             let {user ,repos} = response.data;
+
+            let step;
+            if (repos && repos.length > 0) {
+               step = STEP_3; 
+            } else {
+               step = STEP_2; 
+            }
+
             this.setState({
                 user,
                 repos,
                 loading: false,
-                step: STEP_2,
+                step,
             });
         } catch(error) {
             this.setState({
@@ -117,6 +129,7 @@ export default class Config extends Component {
             });
 
             let {user ,repos} = response.data;
+            
             this.setState({
                 user,
                 repos,
@@ -154,7 +167,35 @@ export default class Config extends Component {
             console.log(error);
             return false;
         }
-               
+    }
+
+    async _onStep3Submit(selected_repos) {
+        const { auth } = this.state;
+
+        try {
+            let response = await axios({
+                method: 'POST',
+                url: 'https://localhost:3001/projects-twitch-extension/us-central1/selectedReposOrder',
+                data: {
+                    selected_repos,
+                    auth
+                },
+                headers: {
+                    'x-extension-jwt': auth.token,
+                }
+            });
+
+            const cUser = Object.assign({}, this.state.user, { selected_repos })
+
+            this.setState({
+                user: cUser
+            });
+
+            return true;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
     }
 
     _goBack() {
@@ -169,6 +210,12 @@ export default class Config extends Component {
         });
     }
 
+    _goStep3() {
+        this.setState({
+            step: STEP_3,
+        });
+    }
+
     _displayLoading() {
         return(
             <LoadingContainer className="mui--text-center">
@@ -179,27 +226,36 @@ export default class Config extends Component {
     }
 
     _appBar() {
-        let step2Button = null, step1Button = null;
+        let  title = '';
+        let leftNavButton = <td className="mui--appbar-height mui--text-center" />
+        let rightNavButton = <td className="mui--appbar-height mui--text-center"/>
 
+        // Left Nav Button
         if (this.state.step === STEP_2) {
-            step1Button = <td className="mui--appbar-height mui--text-center mui--divider-right" onClick={this._goBack}><div class="mui--text-button">Back</div></td>
-        } else {
-            step1Button = <td className="mui--appbar-height mui--text-center"/>
+            leftNavButton = <td className="mui--appbar-height mui--text-center mui--divider-right" onClick={this._goBack}><div class="mui--text-button">Back</div></td>
+            rightNavButton = <td className="mui--appbar-height mui--text-center mui--divider-left" onClick={this._goStep3}><div class="mui--text-button">Step 3</div></td>
+            title = 'Select Your Repositories';
+        } else if (this.state.step === STEP_3) {
+            leftNavButton = <td className="mui--appbar-height mui--text-center mui--divider-right" onClick={this._goStep2}><div class="mui--text-button">Back</div></td>
+            title = 'Order Your Projects';
+        } else if (this.state.step === STEP_1) {
+            title = 'Enter Your GitHub Username';
         }
 
+        // Right Nav Buttons
         if(this.state.user && this.state.step === STEP_1) {
-            step2Button = <td className="mui--appbar-height mui--text-center mui--divider-left" onClick={this._goStep2}><div class="mui--text-button">Step 2</div></td>
-        } else {
-            step2Button = <td className="mui--appbar-height mui--text-center"/>
+            rightNavButton = <td className="mui--appbar-height mui--text-center mui--divider-left" onClick={this._goStep2}><div class="mui--text-button">Step 2</div></td>
         }
 
         return(
             <div className="mui-appbar">
                 <HeaderTable>
                     <tr>
-                        {step1Button}
-                        <td className="mui--appbar-height mui--text-center"><div class="mui--text-headline">{ this.state.user ? 'Select Your Repositories' : 'Enter Your GitHub Username' }</div></td>
-                        {step2Button}
+                        {leftNavButton}
+                        <td className="mui--appbar-height mui--text-center">
+                            <div class="mui--text-headline">{title}</div>
+                        </td>
+                        {rightNavButton}
                     </tr>
                 </HeaderTable>
             </div>
@@ -207,18 +263,25 @@ export default class Config extends Component {
     }
 
     displayForm() {
-        if (this.state.loading) {
+        let {step, loading, user, repos } = this.state;
+        if (loading) {
             return this._displayLoading();
         } else {
-            if (this.state.step === STEP_2) {
+            if (step === STEP_2) {
                 return(
                     <Step2Form onSubmit={(data) =>  this._onStep2Submit(data) } user={this.state.user} repos={this.state.repos} />
                 );
-            } else {
+            } else if (step === STEP_3) {
                 return (
-                    <Step1Form onSubmit={(data) => this._onStep1Submit(data)} />
+                    <Step3Form onSubmit={this._onStep3Submit} user={user} repos={repos} />
+                );
+            } else if(step === STEP_1) {
+                return (
+                    <Step1Form onSubmit={(data) => this._onStep1Submit(data)}/>
                 );
             }
+
+            return <h1>Sorry but were having trouble getting your info :(</h1>
         }        
     }
 
@@ -227,8 +290,8 @@ export default class Config extends Component {
 
         if(!repos || !user.selected_repos) return [];
 
-        return repos.filter((repo) => {
-            return user.selected_repos.includes(repo.id);
+        return user.selected_repos.map((repo_id) => {
+            return repos.find( repo => ( repo.id === repo_id ));
         });
     }
 
@@ -251,3 +314,5 @@ export default class Config extends Component {
         );
     }
 }
+
+export default Config;

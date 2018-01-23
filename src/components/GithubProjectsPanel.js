@@ -1,12 +1,11 @@
 import React from 'react';
 import styled from "styled-components";
 import Loader from "../components/Loader";
+import ProjectListItem from '../components/ProjectListItem';
 
 const Container = styled.div`
     width: 100%;
-    height: 100%;
-    max-height: 500px;
-    max-height: 100vh;
+    height: 500px;
     overflow-x: hidden; 
     overflow-y: hidden;
     display: flex;
@@ -16,39 +15,15 @@ const Container = styled.div`
 `;
 
 const HeroProjectContainer = styled.div`
-    flex: 1;
     display: flex;
     margin-left: 10px;
+    min-height: 35px;
 `;
 
-const ProjectList = styled.ul`
-    list-style-type: none;
+const ProjectList = styled.div`
     margin: 0px;
     padding-left: 0px;
-    flex: 9;
-    display: flex;
-    flex-direction: column;
-`;
-
-const ProjectListItem = styled.li`
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding-left: 10px;
-    border-width: 0px 0px 1px 0px;
-    border-style: solid;
-    border-color: #CCC;
-    background-color: #F0F0F0;
-    transition: background-color 1s ease;
-    
-    &:first-child {
-        border-top-width: 0px;
-        background-color: #FFFFFF;
-    }
-
-    &:hover {
-        background-color: #BBDEFB;
-    }
+    overflow-y: scroll;
 `;
 
 const ProfileImageContainer = styled.span`
@@ -67,31 +42,19 @@ const H3 = styled.div`
     font-size: 18px;
     font-weight: bold;
     flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 `
 const UsernameText = H3.extend`
     padding-top: 10px;
     padding-left: 10px;
-`
-
-const Subtext = styled.div`
-    font-size: 12px;
-    font-style: italic;
-    color: #5a5a5a;
-    flex: 1;
-    text-overflow: ellipsis;
+    cursor: pointer;
     overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
 `
-const Text = styled.div`
-    font-size: 12px;
-    flex: 1;
-`
 
-const LanguageText = styled.div`
-    padding-top: 5px;
-    font-size: 10px;
-    flex: 1;
-`
 const _projectRows = (repos) => {
     if (!repos || !repos.length) {
         return 'Pleae Select Your Projects';
@@ -99,12 +62,7 @@ const _projectRows = (repos) => {
 
     let rows = repos.map((repo) => {
         return (
-            <ProjectListItem onClick={() => window.open(repo.html_url, '_blank')}>
-                <H3>{repo.name}</H3>
-                <Text>{repo.full_name}</Text>
-                <Subtext>{repo.description}</Subtext>
-                <LanguageText>{repo.language}</LanguageText>
-            </ProjectListItem>
+            <ProjectListItem onClick={() => window.open(repo.html_url, '_blank')} repo={repo} />
         );
     })
 
@@ -122,7 +80,7 @@ const _heroSection = (user) => {
             <ProfileImageContainer>
                 <img src={`${user.github_user.avatar_url}&s=30`} alt="avatar" />
             </ProfileImageContainer>
-            <UsernameText>{user.github_user.login}</UsernameText>
+            <UsernameText onClick={ () => window.open(`https://github.com/${user.github_user.login}`) }>{user.github_user.login}</UsernameText>
         </HeroProjectContainer>
     );
 }
