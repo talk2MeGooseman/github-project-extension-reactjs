@@ -90,10 +90,10 @@ class Config extends Component {
                 }
             });
 
-            let {user ,repos} = response.data;
+            let user = response.data;
 
             let step;
-            if (repos && repos.length > 0) {
+            if (user.selected_repos && user.selected_repos.length > 0) {
                step = STEP_3; 
             } else {
                step = STEP_2; 
@@ -101,7 +101,6 @@ class Config extends Component {
 
             this.setState({
                 user,
-                repos,
                 loading: false,
                 step,
             });
@@ -115,6 +114,8 @@ class Config extends Component {
 
     async _onStep1Submit(data) {
         const { auth } = this.state;
+        this._displaySavingOverylay();
+
         try {
             let response = await axios({
                 method: 'POST',
@@ -128,13 +129,13 @@ class Config extends Component {
                 }
             });
 
-            let {user ,repos} = response.data;
+            let {user} = response.data;
             
             this.setState({
                 user,
-                repos,
                 loading: false,
-                step: STEP_2
+                step: STEP_2,
+                error: false,
             });
         } catch(error) {
             console.log(error);
@@ -142,10 +143,15 @@ class Config extends Component {
                 error: true
             });
         };
+
+        this._hideOverlay();
     }
 
     async _onStep2Submit(data) {
         const { auth } = this.state;
+        let responseOk = true;
+
+        this._displaySavingOverylay();
 
         try {
             let response = await axios({
@@ -161,16 +167,25 @@ class Config extends Component {
             });
 
             this._getBroadcastconfig();
-
-            return true;
+            this.setState({
+                error: false,
+            });
         } catch (error) {
             console.log(error);
-            return false;
+            responseOk = false;
+            this.setState({
+                error: true,
+            });
         }
+       
+        this._hideOverlay();
+        return responseOk;
     }
 
     async _onStep3Submit(selected_repos) {
         const { auth } = this.state;
+        let responseOk = true;
+        this._displaySavingOverylay();
 
         try {
             let response = await axios({
@@ -188,14 +203,36 @@ class Config extends Component {
             const cUser = Object.assign({}, this.state.user, { selected_repos })
 
             this.setState({
-                user: cUser
+                user: cUser,
+                error: false,
             });
-
-            return true;
         } catch (error) {
             console.log(error);
-            return false;
+            responseOk = false;
+            this.setState({
+                error: true,
+            });
         }
+
+        this._hideOverlay();
+        return responseOk;
+    }
+
+    _displaySavingOverylay() {
+        // initialize modal element
+        var modalEl = document.createElement('div');
+        modalEl.innerHTML = '<div style="padding-top: 25%;height: 100%;" class="mui--align-middle mui--text-center"><h1>saving...</h1></div>';
+        modalEl.style.width = '400px';
+        modalEl.style.height = '300px';
+        modalEl.style.margin = '100px auto';
+        modalEl.style.backgroundColor = '#fff';
+
+        // show modal
+        window.mui.overlay('on', modalEl);
+    }
+
+    _hideOverlay() {
+        window.mui.overlay('off');
     }
 
     _goBack() {
@@ -263,7 +300,7 @@ class Config extends Component {
     }
 
     displayForm() {
-        let {step, loading, user, repos } = this.state;
+        let {step, loading, user } = this.state;
         if (loading) {
             return this._displayLoading();
         } else {
@@ -273,7 +310,7 @@ class Config extends Component {
                 );
             } else if (step === STEP_3) {
                 return (
-                    <Step3Form onSubmit={this._onStep3Submit} user={user} repos={repos} />
+                    <Step3Form onSubmit={this._onStep3Submit} user={user} />
                 );
             } else if(step === STEP_1) {
                 return (
@@ -286,17 +323,17 @@ class Config extends Component {
     }
 
     _getPreviewRepos(){
-        let { repos, user } = this.state;
+        let { user } = this.state;
 
-        if(!repos || !user.selected_repos) return [];
+        if(!user || !user.repos || !user.selected_repos) return [];
 
         return user.selected_repos.map((repo_id) => {
-            return repos.find( repo => ( repo.id === repo_id ));
+            return user.repos.find( repo => ( repo.id === repo_id ));
         });
     }
 
     render() {
-        let { user, loading } = this.state;
+        let { user, loading, error } = this.state;
         let previewRepos = this._getPreviewRepos();
 
         return(
@@ -306,6 +343,7 @@ class Config extends Component {
                     <FormContainer>
                         {this.displayForm()}
                     </FormContainer>
+                    {error ? <div className="mui--bg-danger">Opps, something went wrong. Please try again.</div>: ''}
                 </ConfigContainer>
                 <LiveContainer className="mui-panel mui--z5">
                     <GithubProjectsPanel user={user} loading={loading} repos={previewRepos} />

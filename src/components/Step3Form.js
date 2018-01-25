@@ -19,7 +19,6 @@ const HeaderContainer = styled.div`
 class Step3Form extends Component {
     static propTypes = {
         user: PropTypes.object.isRequired,
-        repos: PropTypes.array.isRequired,
         onSubmit: PropTypes.func.isRequired,
     };
 
@@ -61,13 +60,13 @@ class Step3Form extends Component {
     }
 
     render() {
-        const { user: { github_user: { avatar_url, login } }, repos } = this.props;
+        const { user: { github_user: { avatar_url, login }, repos } } = this.props;
         let { selected_repos } = this.state;
 
         let selected_repos_data = selected_repos.map((repo_id) => {
             return repos.find((repo_data) => repo_data.id === repo_id );
         });
-
+        debugger;
         return (
             <div>
                 <HeaderContainer className="mui-textfield">
