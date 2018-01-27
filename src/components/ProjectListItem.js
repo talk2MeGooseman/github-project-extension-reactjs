@@ -1,4 +1,5 @@
 import React from "react";
+import Colors from "../data/colors.json";
 import styled from "styled-components";
 
 const H3 = styled.div`
@@ -42,7 +43,7 @@ const ProjectListItem = styled.div`
     border-color: #CCC;
     background-color: #F0F0F0;
     transition: background-color 0.5s ease;
-    cursor: ${props => props.cursor ? props.cursor : 'pointer' };
+    cursor: ${props => props.draggable? 'move' : 'pointer' };
     overflow: hidden;
     
     &:first-child {
@@ -51,6 +52,8 @@ const ProjectListItem = styled.div`
         background-color: #FFFFFF;
 
         &:before {
+            content: '${ props => props.draggable ? '': '⭐Featured' }';
+            font-weight: bold;
         }
     }
 
@@ -59,13 +62,26 @@ const ProjectListItem = styled.div`
     }
 `;
 
-export default function Item({ repo, onClick, cursor = false }) {
+const PillaMaThing = styled.span`
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: ${props => props.color};
+    margin-right: 3px;
+`;
+
+export default function Item({ repo, onClick, draggable}) {
+    const pill_color = Colors[repo.language];
+
     return(
-        <ProjectListItem onClick={onClick} cursor={cursor} >
+        <ProjectListItem onClick={onClick} draggable={draggable} >
             <H3>{repo.name}</H3>
             <Text>{repo.full_name}</Text>
             <Subtext>{repo.description}</Subtext>
-            <LanguageText>{repo.language}</LanguageText>
+            <LanguageText>{repo.language ? <PillaMaThing color={pill_color} /> : '' }{repo.language}</LanguageText>
         </ProjectListItem>
     );
 }

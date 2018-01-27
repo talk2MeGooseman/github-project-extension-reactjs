@@ -1,18 +1,9 @@
 import React from 'react';
 import { withFormik, Field } from 'formik';
-import styled from 'styled-components';
+import GithubImageHeader from "./GithubImageHeader";
 const regex = /^selected-(\d+)/;
 
-const HeaderContainer = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: flex-end;
 
-    img {
-        margin-right: 5px;
-        border: 1px solid black;
-    }
-`
 
 function _repoTableRows({repos, selected_repos}) {
     return repos.map((repo) => {
@@ -59,13 +50,11 @@ const MainForm = ({
     isSubmitting,
   }) => (
     <form onSubmit={handleSubmit} className="mui-form">
-        <HeaderContainer className="mui-textfield">        
-            <img src={values.avatar_url} /><h1>{values.username}</h1> 
-        </HeaderContainer>
+        <GithubImageHeader {...values} />
         {_tableForm(values)}
         <div className="mui--bg-danger mui--text-white">{errors.select}</div>
         <button type="submit" disabled={isSubmitting} className={'mui-btn mui-btn--primary mui-btn--raised'}>
-            Submit
+            Add Projects
         </button>
     </form>
 );

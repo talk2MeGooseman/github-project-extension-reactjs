@@ -23,15 +23,16 @@ const Container = styled.div`
         justify-content: center;
         align-items: center;
     }
-`
+`;
 
 const ConfigContainer = styled.div`
     width: 70vw;
+    min-width: 600px;
     height: 100vh;
     background-color: #ffffff;
     margin-right: 50px;
     overflow: auto;
-`
+`;
 
 const LiveContainer = styled.div`
     width: 318px;
@@ -54,6 +55,11 @@ const HeaderTable = styled.table`
         width: 10%;
     }
 `;
+
+const PreviewHeader = styled.div`
+    margin-bottom: 5px;
+`;
+
 class Config extends Component {
     state = {
         auth: {},
@@ -129,7 +135,7 @@ class Config extends Component {
                 }
             });
 
-            let {user} = response.data;
+            let user = response.data;
             
             this.setState({
                 user,
@@ -140,7 +146,8 @@ class Config extends Component {
         } catch(error) {
             console.log(error);
             this.setState({
-                error: true
+                error: true,
+                message: error,
             });
         };
 
@@ -156,7 +163,7 @@ class Config extends Component {
         try {
             let response = await axios({
                 method: 'POST',
-                url: 'https://localhost:3001/projects-twitch-extension/us-central1/updateBroadcasterGithubConfigs',
+                url: 'https://localhost:3001/projects-twitch-extension/us-central1/setUserSelectedRepos',
                 data: {
                     data,
                     auth
@@ -166,8 +173,9 @@ class Config extends Component {
                 }
             });
 
-            this._getBroadcastconfig();
             this.setState({
+                user: response.data,
+                step: STEP_3, 
                 error: false,
             });
         } catch (error) {
@@ -228,7 +236,9 @@ class Config extends Component {
         modalEl.style.backgroundColor = '#fff';
 
         // show modal
-        window.mui.overlay('on', modalEl);
+        window.mui.overlay('on', {
+            static: true
+        }, modalEl);
     }
 
     _hideOverlay() {
@@ -270,7 +280,11 @@ class Config extends Component {
         // Left Nav Button
         if (this.state.step === STEP_2) {
             leftNavButton = <td className="mui--appbar-height mui--text-center mui--divider-right" onClick={this._goBack}><div class="mui--text-button">Back</div></td>
-            rightNavButton = <td className="mui--appbar-height mui--text-center mui--divider-left" onClick={this._goStep3}><div class="mui--text-button">Step 3</div></td>
+
+            if (this.state.user.selected_repos && this.state.user.selected_repos.length > 0) {
+                rightNavButton = <td className="mui--appbar-height mui--text-center mui--divider-left" onClick={this._goStep3}><div class="mui--text-button">Step 3</div></td>
+            }
+
             title = 'Select Your Repositories';
         } else if (this.state.step === STEP_3) {
             leftNavButton = <td className="mui--appbar-height mui--text-center mui--divider-right" onClick={this._goStep2}><div class="mui--text-button">Back</div></td>
@@ -299,8 +313,18 @@ class Config extends Component {
         );
     }
 
+    scrollConfigContinerUp() {
+        const element = document.getElementById('config-container');
+        // Scroll to top between views
+        if (element) {
+            element.scrollTo(0, 0);
+        }
+    }
+
     displayForm() {
         let {step, loading, user } = this.state;
+        this.scrollConfigContinerUp();
+
         if (loading) {
             return this._displayLoading();
         } else {
@@ -338,7 +362,7 @@ class Config extends Component {
 
         return(
             <Container>
-                <ConfigContainer>
+                <ConfigContainer id="config-container">
                     {this._appBar()}
                     <FormContainer>
                         {this.displayForm()}
@@ -346,6 +370,15 @@ class Config extends Component {
                     {error ? <div className="mui--bg-danger">Opps, something went wrong. Please try again.</div>: ''}
                 </ConfigContainer>
                 <LiveContainer className="mui-panel mui--z5">
+                    <PreviewHeader className="mui-appbar">
+                        <table width="100%">
+                            <tr style={{verticalAlign: 'middle'}}>
+                                <td class="mui--appbar-height">
+                                    <div className="mui--text-headline mui--text-center">Panel Preview</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </PreviewHeader>
                     <GithubProjectsPanel user={user} loading={loading} repos={previewRepos} />
                 </LiveContainer>               
             </Container>

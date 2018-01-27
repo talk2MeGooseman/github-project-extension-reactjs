@@ -77,7 +77,7 @@ const connectDragTarget = (connect, monitor) => ({
 	isDragging: monitor.isDragging(),
 });
 
-class Repo extends Component {
+class DraggableRepo extends Component {
 	static propTypes = {
 		connectDragSource: PropTypes.func.isRequired,
 		connectDropTarget: PropTypes.func.isRequired,
@@ -98,11 +98,14 @@ class Repo extends Component {
 		const opacity = isDragging ? 0 : 1
 
 		return connectDragSource(
-			connectDropTarget(<div style={{ ...style, opacity }}><ProjectListItem repo={repo} cursor='move' /></div>),
+			connectDropTarget(
+				<div style={{ ...style, opacity }}>
+					<ProjectListItem repo={repo} draggable />
+				</div>),
 		)
 	}
 }
 
-const DT = DropTarget(ItemTypes.REPO, repoTarget, connectDropTarget)(Repo);
+const DT = DropTarget(ItemTypes.REPO, repoTarget, connectDropTarget)(DraggableRepo);
 
 export default DragSource(ItemTypes.REPO, repoSource, connectDragTarget)(DT);

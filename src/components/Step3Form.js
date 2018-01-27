@@ -1,20 +1,9 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
-import Repo from "./Repo";
+import DraggableRepo from "./DraggableRepo";
 import { DragDropContext } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend';
 import PropTypes from "prop-types";
-
-const HeaderContainer = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: flex-end;
-
-    img {
-        margin-right: 5px;
-        border: 1px solid black;
-    }
-`;
+import GithubImageHeader from './GithubImageHeader';
 
 class Step3Form extends Component {
     static propTypes = {
@@ -66,17 +55,15 @@ class Step3Form extends Component {
         let selected_repos_data = selected_repos.map((repo_id) => {
             return repos.find((repo_data) => repo_data.id === repo_id );
         });
-        debugger;
+
         return (
             <div>
-                <HeaderContainer className="mui-textfield">
-                    <img src={avatar_url} /><h1>{login}</h1>
-                </HeaderContainer>
+                <GithubImageHeader avatar_url={avatar_url} username={login} />
                 <div class="mui--text-title"><strong>Drag to order projects</strong></div>
                 <div class="mui-divider"></div>
                 <br />
                 {selected_repos_data.map((repo, i) => (
-                    <Repo
+                    <DraggableRepo
                         key={repo.id}
                         index={i}
                         id={repo.id}
@@ -84,7 +71,7 @@ class Step3Form extends Component {
                         moveCard={this.moveCard}
                     />
                 ))}
-                <button class="mui-btn mui-btn--raised mui-btn--primary" onClick={this.onClick}>Update</button>
+                <button class="mui-btn mui-btn--raised mui-btn--primary" onClick={this.onClick}>Set Order</button>
             </div>
         );
     }
