@@ -11,6 +11,7 @@ import Step3Form from '../components/Step3Form';
 const STEP_1 = 1;
 const STEP_2 = 2;
 const STEP_3 = 3;
+const STEP_ERROR = 1000;
 
 const Container = styled.div`
     width: 100vw;
@@ -111,9 +112,15 @@ class Config extends Component {
                 step,
             });
         } catch(error) {
+            let step = STEP_1;
+
+            if(!error) {
+                step = STEP_ERROR;
+            } 
+
             this.setState({
                 loading: false,
-                step: STEP_1,
+                step
             });
         }
     }

@@ -37,7 +37,10 @@ export default class Viewer extends Component {
             });
 
         } catch (error) {
-            console.log(error); 
+            this.setState({
+                loading: false,
+                error: true,
+            });
         }        
     }
 

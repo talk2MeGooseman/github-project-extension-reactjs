@@ -57,7 +57,7 @@ const UsernameText = H3.extend`
 
 const _projectRows = (repos) => {
     if (!repos || !repos.length) {
-        return <div className="mui--text-center mui--text-headline">Select your Github Projects</div>;
+        return <div className="mui--text-center mui--text-headline">No Github Projects Selected</div>;
     }
 
     let rows = repos.map((repo) => {
