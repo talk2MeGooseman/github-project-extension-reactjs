@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import styled from "styled-components";
 
 import GithubProjectsPanel from "../components/GithubProjectsPanel";
@@ -7,6 +6,7 @@ import Step1Form from "../components/Step1Form";
 import Loader from '../components/Loader';
 import Step2Form from '../components/Step2Form';
 import Step3Form from '../components/Step3Form';
+import { getBroadcasterGithubInfo, setBroadcasterGithubInfo, setUserSelectedRepos, selectedReposOrder } from "../services/Ebs";
 
 const STEP_1 = 1;
 const STEP_2 = 2;
@@ -89,15 +89,7 @@ class Config extends Component {
         const { auth } = this.state;
 
         try {
-            let response = await axios({
-                method: 'GET',
-                url: 'https://localhost:3001/projects-twitch-extension/us-central1/getBroadcasterGithubInfo',
-                headers: {
-                    'x-extension-jwt': auth.token,
-                }
-            });
-
-            let user = response.data;
+            let user = await getBroadcasterGithubInfo(auth);
 
             let step;
             if (user.selected_repos && user.selected_repos.length > 0) {
@@ -130,19 +122,7 @@ class Config extends Component {
         this._displaySavingOverylay();
 
         try {
-            let response = await axios({
-                method: 'POST',
-                url: 'https://localhost:3001/projects-twitch-extension/us-central1/setBroadcasterGithubInfo',
-                data: {
-                    data,
-                    auth
-                },
-                headers: {
-                    'x-extension-jwt': auth.token,
-                }
-            });
-
-            let user = response.data;
+            let user = await setBroadcasterGithubInfo(data, auth);;
             
             this.setState({
                 user,
@@ -168,20 +148,10 @@ class Config extends Component {
         this._displaySavingOverylay();
 
         try {
-            let response = await axios({
-                method: 'POST',
-                url: 'https://localhost:3001/projects-twitch-extension/us-central1/setUserSelectedRepos',
-                data: {
-                    data,
-                    auth
-                },
-                headers: {
-                    'x-extension-jwt': auth.token,
-                }
-            });
+            let user = await setUserSelectedRepos(data, auth);
 
             this.setState({
-                user: response.data,
+                user: user,
                 step: STEP_3, 
                 error: false,
             });
@@ -203,18 +173,7 @@ class Config extends Component {
         this._displaySavingOverylay();
 
         try {
-            let response = await axios({
-                method: 'POST',
-                url: 'https://localhost:3001/projects-twitch-extension/us-central1/selectedReposOrder',
-                data: {
-                    selected_repos,
-                    auth
-                },
-                headers: {
-                    'x-extension-jwt': auth.token,
-                }
-            });
-
+            await selectedReposOrder(selected_repos, auth);
             const cUser = Object.assign({}, this.state.user, { selected_repos })
 
             this.setState({

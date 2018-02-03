@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import styled from "styled-components";
-import axios from "axios";
 import GithubProjectsPanel from '../components/GithubProjectsPanel';
+import { viewBroadcasterData } from "../services/Ebs";
 
 export default class Viewer extends Component {
     state = {
@@ -23,17 +22,10 @@ export default class Viewer extends Component {
         if (!auth) return;
 
         try {
-            let response = await axios({
-                method: 'GET',
-                url: 'https://localhost:3001/projects-twitch-extension/us-central1/viewBroadcasterData',
-                headers: {
-                    'x-extension-jwt': auth.token,
-                }
-            });
-            
+            let data = await viewBroadcasterData(auth);            
             this.setState({
                 loading: false,
-                ...response.data
+                ...data
             });
 
         } catch (error) {
