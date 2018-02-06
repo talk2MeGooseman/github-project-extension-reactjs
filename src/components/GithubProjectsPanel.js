@@ -16,6 +16,7 @@ const Container = styled.div`
 
 const HeroProjectContainer = styled.div`
     display: flex;
+    margin-top: 10px;
     margin-left: 10px;
     min-height: 35px;
 `;
@@ -85,6 +86,20 @@ const _heroSection = (user) => {
     );
 }
 
+const _titleBar = () => {
+    return(
+        <div className="mui-appbar mui--z2">
+            <table width="100%">
+                <tr style={{ verticalAlign: 'middle' }}>
+                    <td class="mui--appbar-height mui--text-headline" align="center">
+                        Github Projects
+                    </td>
+                </tr>
+            </table>
+        </div>
+    );
+}
+
 const _displayContent = (user, loading, repos) => {
     if (loading) {
         return (
@@ -95,6 +110,7 @@ const _displayContent = (user, loading, repos) => {
     } else {
         return (
             <Container>
+                {_titleBar()}
                 {_heroSection(user)}
                 <ProjectList>
                     {_projectRows(repos)}

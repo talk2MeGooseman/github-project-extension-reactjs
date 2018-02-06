@@ -18,7 +18,6 @@ const Subtext = styled.div`
     flex: 1;
     text-overflow: ellipsis;
     overflow: hidden;
-    white-space: nowrap;
 `
 const Text = styled.div`
     font-size: 12px;
@@ -34,9 +33,10 @@ const LanguageText = styled.div`
     flex: 1;
 `
 const ProjectListItem = styled.div`
-    height: 90px;
+    height: 125px;
     display: flex;
     flex-direction: column;
+    padding-top: 10px;
     padding-left: 10px;
     border-width: 0px 0px 1px 0px;
     border-style: solid;
@@ -47,7 +47,6 @@ const ProjectListItem = styled.div`
     overflow: hidden;
     
     &:first-child {
-        height: 100px;
         border-top-width: 0px;
         background-color: #FFFFFF;
 
@@ -81,7 +80,7 @@ export default function Item({ repo, onClick, draggable}) {
             <H3>{repo.name}</H3>
             <Text>{repo.full_name}</Text>
             <Subtext>{repo.description}</Subtext>
-            <LanguageText>{repo.language ? <PillaMaThing color={pill_color} /> : '' }{repo.language}</LanguageText>
+            <LanguageText><div>{repo.language ? <PillaMaThing color={pill_color} /> : '' }{repo.language}</div></LanguageText>
         </ProjectListItem>
     );
 }
