@@ -5,11 +5,13 @@ import { viewBroadcasterData } from "../services/Ebs";
 export default class Viewer extends Component {
     state = {
         loading: true,
+        user: null,
+        repos: null,
+        error: false
     };
 
     componentDidMount() {
         window.Twitch.ext.onAuthorized( (auth) => {
-            console.log(auth);
             this.setState({
                 auth
             }, () => this._getViewPanelData() );
@@ -19,7 +21,13 @@ export default class Viewer extends Component {
     async _getViewPanelData() {
         const { auth } = this.state;
 
-        if (!auth) return;
+        if (!auth) {
+            this.setState({
+                loading: false,
+                error: true,
+            });
+            return;
+        }
 
         try {
             let data = await viewBroadcasterData(auth);            
@@ -35,8 +43,6 @@ export default class Viewer extends Component {
             });
         }        
     }
-
-
 
     render() {
         let {user, repos, loading } = this.state;

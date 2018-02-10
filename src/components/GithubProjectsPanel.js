@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styled from "styled-components";
 import Loader from "../components/Loader";
 import ProjectListItem from '../components/ProjectListItem';
@@ -24,7 +25,7 @@ const HeroProjectContainer = styled.div`
 const ProjectList = styled.div`
     margin: 0px;
     padding-left: 0px;
-    overflow-y: scroll;
+    overflow-y: auto;
 `;
 
 const ProfileImageContainer = styled.span`
@@ -48,6 +49,7 @@ const H3 = styled.div`
     white-space: nowrap;
 `
 const UsernameText = H3.extend`
+    color: #2096F3;
     padding-top: 10px;
     padding-left: 10px;
     cursor: pointer;
@@ -63,7 +65,7 @@ const _projectRows = (repos) => {
 
     let rows = repos.map((repo) => {
         return (
-            <ProjectListItem onClick={() => window.open(repo.html_url, '_blank')} repo={repo} />
+            <ProjectListItem key={repo.id} onClick={() => window.open(repo.html_url, '_blank')} repo={repo} />
         );
     })
 
@@ -88,7 +90,7 @@ const _heroSection = (user) => {
 
 const _titleBar = () => {
     return(
-        <div className="mui-appbar mui--z2">
+        <div className="mui-appbar mui--z2" style={{ height: '56px', minHeight: '56px' }}>
             <table width="100%">
                 <tr style={{ verticalAlign: 'middle' }}>
                     <td class="mui--appbar-height mui--text-headline" align="center">
@@ -107,6 +109,12 @@ const _displayContent = (user, loading, repos) => {
                 <Loader />
             </Container>
         );
+    } else if (!user || !user.hasOwnProperty('github_user')) {
+        return (
+            <Container>
+                <div className="mui--text-center mui--text-headline">Something went wrong :(</div>;
+            </Container>
+        );
     } else {
         return (
             <Container>
@@ -123,5 +131,11 @@ const _displayContent = (user, loading, repos) => {
 const GithubProjectsPanel = ({user, loading, repos}) => {
     return _displayContent(user, loading, repos);
 };
+
+GithubProjectsPanel.propTypes = {
+    user: PropTypes.object,
+    loading: PropTypes.bool,
+    repos: PropTypes.array,
+}
 
 export default GithubProjectsPanel;

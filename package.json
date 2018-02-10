@@ -59,6 +59,7 @@
     "setupFiles": [
       "<rootDir>/config/polyfills.js"
     ],
+    "setupTestFrameworkScriptFile": "<rootDir>/src/setupTests.js",
     "testMatch": [
       "<rootDir>/src/**/__tests__/**/*.{js,jsx,mjs}",
       "<rootDir>/src/**/?(*.)(spec|test).{js,jsx,mjs}"
@@ -97,6 +98,9 @@
   "devDependencies": {
     "babel-plugin-styled-components": "^1.3.0",
     "cross-env": "^5.1.1",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "jest-enzyme": "^4.2.0",
     "react-scripts": "^1.1.0",
     "styled-components": "^2.3.0"
   }

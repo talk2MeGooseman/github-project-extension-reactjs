@@ -87,6 +87,14 @@ class Config extends Component {
 
     async _getBroadcastconfig() {
         const { auth } = this.state;
+        
+        if(!auth) {
+            this.setState({
+                loading: false,
+                error: true,
+            });
+            return;
+        }
 
         try {
             let user = await getBroadcasterGithubInfo(auth);
@@ -104,6 +112,7 @@ class Config extends Component {
                 step,
             });
         } catch(error) {
+            console.log(error);
             let step = STEP_1;
 
             if(!error) {
@@ -335,16 +344,7 @@ class Config extends Component {
                     </FormContainer>
                     {error ? <div className="mui--bg-danger">Opps, something went wrong. Please try again.</div>: ''}
                 </ConfigContainer>
-                <LiveContainer className="mui-panel mui--z5">
-                    <PreviewHeader className="mui-appbar">
-                        <table width="100%">
-                            <tr style={{verticalAlign: 'middle'}}>
-                                <td class="mui--appbar-height">
-                                    <div className="mui--text-headline mui--text-center">Panel Preview</div>
-                                </td>
-                            </tr>
-                        </table>
-                    </PreviewHeader>
+                <LiveContainer className="mui--z5">
                     <GithubProjectsPanel user={user} loading={loading} repos={previewRepos} />
                 </LiveContainer>               
             </Container>

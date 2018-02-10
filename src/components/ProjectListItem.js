@@ -3,7 +3,7 @@ import Colors from "../data/colors.json";
 import styled from "styled-components";
 
 const H3 = styled.div`
-    color: #0366d6;
+    color: #2096F3;
     font-size: 18px;
     font-weight: bold;
     flex: 1;
@@ -14,10 +14,11 @@ const H3 = styled.div`
 const Subtext = styled.div`
     font-size: 12px;
     font-style: italic;
-    color: #5a5a5a;
-    flex: 1;
+    color: #90A4AE;
+    flex: 2;
     text-overflow: ellipsis;
     overflow: hidden;
+    line-height: normal;
 `
 const Text = styled.div`
     font-size: 12px;
@@ -25,6 +26,7 @@ const Text = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    overflow-wrap: break-word;
 `
 
 const LanguageText = styled.div`
@@ -33,7 +35,7 @@ const LanguageText = styled.div`
     flex: 1;
 `
 const ProjectListItem = styled.div`
-    height: 125px;
+    height: 115px;
     display: flex;
     flex-direction: column;
     padding-top: 10px;
@@ -49,10 +51,12 @@ const ProjectListItem = styled.div`
     &:first-child {
         border-top-width: 0px;
         background-color: #FFFFFF;
+        height: 130px;
 
         &:before {
             content: '${ props => props.draggable ? '': '⭐Featured' }';
             font-weight: bold;
+            height: 14px;
         }
     }
 
@@ -76,7 +80,7 @@ export default function Item({ repo, onClick, draggable}) {
     const pill_color = Colors[repo.language];
 
     return(
-        <ProjectListItem onClick={onClick} draggable={draggable} >
+        <ProjectListItem key={repo.id} onClick={onClick} draggable={draggable} >
             <H3>{repo.name}</H3>
             <Text>{repo.full_name}</Text>
             <Subtext>{repo.description}</Subtext>
