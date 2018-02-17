@@ -7,7 +7,13 @@ import Loader from '../components/Loader';
 import Step2Form from '../components/Step2Form';
 import Step3Form from '../components/Step3Form';
 import GithubImageHeader from "../components/GithubImageHeader";
-import { getBroadcasterGithubInfo, setBroadcasterGithubInfo, setUserSelectedRepos, selectedReposOrder } from "../services/Ebs";
+import {
+  getBroadcasterGithubInfo,
+  setBroadcasterGithubInfo,
+  setUserSelectedRepos,
+  selectedReposOrder,
+  refreshUserRepos,
+} from "../services/Ebs";
 
 const STEP_1 = 1;
 const STEP_2 = 2;
@@ -136,7 +142,6 @@ class Config extends Component {
                 step,
             });
         } catch(error) {
-            console.log(error);
             let step = STEP_1;
 
             if(!error) {
@@ -164,7 +169,6 @@ class Config extends Component {
                 error: false,
             });
         } catch(error) {
-            console.log(error);
             this.setState({
                 error: true,
                 message: error,
@@ -189,7 +193,6 @@ class Config extends Component {
                 error: false,
             });
         } catch (error) {
-            console.log(error);
             responseOk = false;
             this.setState({
                 error: true,
@@ -214,7 +217,6 @@ class Config extends Component {
                 error: false,
             });
         } catch (error) {
-            console.log(error);
             responseOk = false;
             this.setState({
                 error: true,
@@ -223,6 +225,34 @@ class Config extends Component {
 
         this._hideOverlay();
         return responseOk;
+    }
+
+    _onClickRefresh() {
+        this.setState({
+            refresh_repos: true,
+        }, () => this._refreshUserRepos());
+    }
+
+    async _refreshUserRepos() {
+        try {
+            const { auth } = this.state;
+            const { repos } = await refreshUserRepos(auth);
+
+            let user = Object.assign({}, this.state.user);
+            user.repos = repos;
+
+            this.setState({
+                user: user,
+                refresh_repos: false,
+                error: false,
+            });
+        } catch (error) {
+            this.setState({
+                repos: [],
+                refresh_repos: false,
+                error: true,
+            });
+        }
     }
 
     _displaySavingOverylay() {
@@ -321,12 +351,12 @@ class Config extends Component {
     }
 
     displayForm() {
-        let {step, loading, user } = this.state;
-        this.scrollConfigContinerUp();
+        let {step, loading, user, refresh_repos} = this.state;
 
-        if (loading) {
+        if (loading || refresh_repos) {
             return this._displayLoading();
         } else {
+            // STEP 2
             if (step === STEP_2) {
                 const props = {
                     username: user.github_user.login,
@@ -336,15 +366,17 @@ class Config extends Component {
                     <div>
                         <GithubImageHeader {...props} />
                         <div className="mui--text-right">
-                            <button class="mui-btn mui-btn--small mui-btn--primary">Refresh Repos</button>
+                            <button onClick={() => { this._onClickRefresh()} } class="mui-btn mui-btn--small mui-btn--primary">Refresh Repos</button>
                         </div>
                         <Step2Form onSubmit={(data) =>  this._onStep2Submit(data) } user={this.state.user} repos={this.state.repos} />
                     </div>
                 );
+            // STEP 3
             } else if (step === STEP_3) {
                 return (
                     <Step3Form onSubmit={this._onStep3Submit} user={user} />
                 );
+            // STEP 1
             } else if(step === STEP_1) {
                 return (
                     <Step1Form onSubmit={(data) => this._onStep1Submit(data)}/>

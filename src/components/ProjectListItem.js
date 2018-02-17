@@ -43,20 +43,24 @@ const ProjectListItem = styled.div`
     border-width: 0px 0px 1px 0px;
     border-style: solid;
     border-color: #CCC;
-    background-color: #F0F0F0;
+    background-color: #FFFFFF;
     transition: background-color 0.5s ease;
     cursor: ${props => props.draggable? 'move' : 'pointer' };
     overflow: hidden;
     
     &:first-child {
         border-top-width: 0px;
-        background-color: #FFFFFF;
         height: 130px;
 
         &:before {
-            content: '${ props => props.draggable ? '': '⭐Featured' }';
+            content: '${ props => props.draggable ? '': 'HIGHLIGHTED' }';
+            ${ props => props.draggable ? '': 'border: 1px solid #000;' }
+            ${ props => props.draggable ? '': 'background-color: #cfd8dc;' }
+            border-radius: 7px;
+            padding: 0 5px 5px 5px;
             font-weight: bold;
             height: 14px;
+            width: 95px;
         }
     }
 
