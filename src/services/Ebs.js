@@ -71,3 +71,15 @@ export const viewBroadcasterData= async (auth) => {
 
     return response.data;
 };
+
+export const refreshUserRepos = async (auth) => {
+    let response = await axios({
+        method: 'GET',
+        url: 'https://us-central1-projects-twitch-extension.cloudfunctions.net/refreshUsersRepos',
+        headers: {
+            'x-extension-jwt': auth.token,
+        }
+    });
+
+    return response.data;
+};
