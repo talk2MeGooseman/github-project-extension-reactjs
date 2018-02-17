@@ -6,12 +6,36 @@ import Step1Form from "../components/Step1Form";
 import Loader from '../components/Loader';
 import Step2Form from '../components/Step2Form';
 import Step3Form from '../components/Step3Form';
+import GithubImageHeader from "../components/GithubImageHeader";
 import { getBroadcasterGithubInfo, setBroadcasterGithubInfo, setUserSelectedRepos, selectedReposOrder } from "../services/Ebs";
 
 const STEP_1 = 1;
 const STEP_2 = 2;
 const STEP_3 = 3;
 const STEP_ERROR = 1000;
+
+/** 
+title Step 1 Form Submission
+
+UI -> UI: Input github username
+UI->Backend: Submit form username
+Backend->Github: Fetch User metadata
+Github->Backend: User metadata
+Backend->Github: Fetch user repos
+Github->Backend: Repos list
+
+*/
+
+/** 
+title Step 2 Form
+
+UI->Backend: Fetches Cached User info and Repos list
+Backend->UI: Return user info and repos list
+UI->UI: User selects repos they want to show up
+UI->Backend: Submit repos selected
+Backend->Backend: Persist
+Backend-> UI: Send OK 
+*/
 
 const Container = styled.div`
     width: 100vw;
@@ -304,8 +328,18 @@ class Config extends Component {
             return this._displayLoading();
         } else {
             if (step === STEP_2) {
+                const props = {
+                    username: user.github_user.login,
+                    avatar_url: user.github_user.avatar_url,
+                };
                 return(
-                    <Step2Form onSubmit={(data) =>  this._onStep2Submit(data) } user={this.state.user} repos={this.state.repos} />
+                    <div>
+                        <GithubImageHeader {...props} />
+                        <div className="mui--text-right">
+                            <button class="mui-btn mui-btn--small mui-btn--primary">Refresh Repos</button>
+                        </div>
+                        <Step2Form onSubmit={(data) =>  this._onStep2Submit(data) } user={this.state.user} repos={this.state.repos} />
+                    </div>
                 );
             } else if (step === STEP_3) {
                 return (

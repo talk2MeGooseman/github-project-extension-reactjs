@@ -1,6 +1,5 @@
 import React from 'react';
 import { withFormik, Field } from 'formik';
-import GithubImageHeader from "./GithubImageHeader";
 const regex = /^selected-(\d+)/;
 
 
@@ -50,7 +49,6 @@ const MainForm = ({
     isSubmitting,
   }) => (
     <form onSubmit={handleSubmit} className="mui-form">
-        <GithubImageHeader {...values} />
         {_tableForm(values)}
         <div className="mui--bg-danger mui--text-white">{errors.select}</div>
         <button type="submit" disabled={isSubmitting} className={'mui-btn mui-btn--primary mui-btn--raised'}>
