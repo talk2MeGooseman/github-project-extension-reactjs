@@ -47,7 +47,7 @@ const H3 = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-`
+`;
 const UsernameText = H3.extend`
     color: #2096F3;
     padding-top: 10px;
@@ -56,11 +56,19 @@ const UsernameText = H3.extend`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-`
+`;
 
+/**
+ * _projectRows
+ * 
+ * Iterates over the repos for display
+ * 
+ * @param {Array} repos 
+ */
 const _projectRows = (repos) => {
+    // Check if there are any repos to display
     if (!repos || !repos.length) {
-        return <div className="mui--text-center mui--text-headline">No Github Projects Selected</div>;
+        return <div className="mui--text-center mui--text-headline">No Repositories</div>;
     }
 
     let rows = repos.map((repo) => {
@@ -69,10 +77,16 @@ const _projectRows = (repos) => {
         );
     })
 
-
     return rows;
 }
 
+/**
+ * _heroSection
+ * 
+ * Display section of Github username and avatar image
+ *  
+ * @param {Object} user - user github information
+ */
 const _heroSection = (user) => {
     if (!user) {
         return null;
@@ -88,6 +102,11 @@ const _heroSection = (user) => {
     );
 }
 
+/**
+ * _titleBar
+ * 
+ * Displays title area "Github Projects"
+ */
 const _titleBar = () => {
     return(
         <div className="mui-appbar mui--z2" style={{ height: '56px', minHeight: '56px' }}>
@@ -102,19 +121,36 @@ const _titleBar = () => {
     );
 }
 
-const _displayContent = (user, loading, repos) => {
+/**
+ * _displayContent
+ * 
+ * Handles if we should displa and loader, error message,
+ * or render the full panel
+ * 
+ * @returns {Object} JSX
+ * @param {Object} user 
+ * @param {String} loading 
+ * @param {Array} repos 
+ * @param {String} error
+ */
+const _displayContent = (user, loading, repos, error) => {
+    // Display loader
     if (loading) {
         return (
             <Container>
                 <Loader />
             </Container>
         );
-    } else if (!user || !user.hasOwnProperty('github_user')) {
+    // Display error if data is missing or error thrown
+    } else if (error || !user || !user.hasOwnProperty('github_user')) {
+        const message = error || "Something went wrong :(";
+
         return (
             <Container>
-                <div className="mui--text-center mui--text-headline">Something went wrong :(</div>;
+                <div className="mui--text-center mui--text-headline">{message}</div>;
             </Container>
         );
+    // If not issue render component
     } else {
         return (
             <Container>
@@ -128,14 +164,23 @@ const _displayContent = (user, loading, repos) => {
     }
 }
 
-const GithubProjectsPanel = ({user, loading, repos}) => {
-    return _displayContent(user, loading, repos);
+/**
+ * GitubProjectsPanel
+ * 
+ * Panel that displays a single column multi row UI
+ * of the repos passed in
+ * 
+ * @param {Object} props
+ */
+const GithubProjectsPanel = ({user, loading, repos, error}) => {
+    return _displayContent(user, loading, repos, error);
 };
 
 GithubProjectsPanel.propTypes = {
     user: PropTypes.object,
     loading: PropTypes.bool,
     repos: PropTypes.array,
+    error: PropTypes.string,
 }
 
 export default GithubProjectsPanel;

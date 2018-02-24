@@ -34,7 +34,7 @@ const LanguageText = styled.div`
     font-size: 10px;
     flex: 1;
 `
-const ProjectListItem = styled.div`
+const Item = styled.div`
     height: 115px;
     display: flex;
     flex-direction: column;
@@ -80,15 +80,24 @@ const PillaMaThing = styled.span`
     margin-right: 3px;
 `;
 
-export default function Item({ repo, onClick, draggable}) {
+/**
+ * ProjectListItem
+ * 
+ * Component that displays repo row
+ * 
+ * @param {Object} repo, onClick, draggable
+ */
+function ProjectListItem ({ repo, onClick, draggable}) {
     const pill_color = Colors[repo.language];
 
     return(
-        <ProjectListItem key={repo.id} onClick={onClick} draggable={draggable} >
+        <Item key={repo.id} onClick={onClick} draggable={draggable} >
             <H3>{repo.name}</H3>
             <Text>{repo.full_name}</Text>
             <Subtext>{repo.description}</Subtext>
             <LanguageText><div>{repo.language ? <PillaMaThing color={pill_color} /> : '' }{repo.language}</div></LanguageText>
-        </ProjectListItem>
+        </Item>
     );
 }
+
+export default ProjectListItem;

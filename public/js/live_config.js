@@ -1,1 +1,0 @@
-window.entryPoint = "LIVE_VIEWER";

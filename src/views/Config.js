@@ -7,6 +7,8 @@ import Loader from '../components/Loader';
 import Step2Form from '../components/Step2Form';
 import Step3Form from '../components/Step3Form';
 import GithubImageHeader from "../components/GithubImageHeader";
+import ConfigAppBar from "../components/ConfigAppBar";
+import { displaySavingOverylay, hideOverlay } from "../lib/mui-helpers";
 import {
   getBroadcasterGithubInfo,
   setBroadcasterGithubInfo,
@@ -15,8 +17,11 @@ import {
   refreshUserRepos,
 } from "../services/Ebs";
 
+/** User needs to input Github login */
 const STEP_1 = 1;
+/** User needs to select repositories for display */
 const STEP_2 = 2;
+/** User can sort their repositories */
 const STEP_3 = 3;
 const STEP_ERROR = 1000;
 
@@ -78,20 +83,16 @@ const LoadingContainer = styled.div`
     height:50vh;
 `;
 
-const HeaderTable = styled.table`
-    width: 100%;
-
-    td:first-child, td:last-child {
-        cursor: pointer;
-        width: 10%;
-    }
-`;
-
-const PreviewHeader = styled.div`
-    margin-bottom: 5px;
-`;
-
+/**
+ * Config
+ * 
+ * Config view for broadcaster to setup their panel
+ * 
+ * @class Config
+ * @extends {Component}
+ */
 class Config extends Component {
+    // Set inital state
     state = {
         auth: {},
         loading: true,
@@ -99,37 +100,48 @@ class Config extends Component {
     };
 
     constructor() {
-        super();        
+        super();
 
-        this._goBack = this._goBack.bind(this);
+        this._goStep1 = this._goStep1.bind(this);
         this._goStep2 = this._goStep2.bind(this);
         this._goStep3 = this._goStep3.bind(this);
         this._onStep3Submit = this._onStep3Submit.bind(this);
     }
 
     componentDidMount() {
+        // Get user auth information from Twitch
         window.Twitch.ext.onAuthorized( (auth) => {
+            // Set auth info and then fetch broadcaster configuration
             this.setState({
                 auth
             }, () => this._getBroadcastconfig() );
         });
     }
 
+    /**
+     * Fetch the broadcasters configuration information so we know what
+     * step they are on
+     * 
+     * @memberof Config
+     */
     async _getBroadcastconfig() {
         const { auth } = this.state;
         
+        // Check if we have authed
         if(!auth) {
             this.setState({
                 loading: false,
-                error: true,
+                error: 'Authentication with Twitch Failed',
             });
             return;
         }
 
         try {
+            // Fetch the configuration info
             let user = await getBroadcasterGithubInfo(auth);
 
             let step;
+            // Check if they have selected their repos yet
             if (user.selected_repos && user.selected_repos.length > 0) {
                step = STEP_3; 
             } else {
@@ -141,23 +153,36 @@ class Config extends Component {
                 loading: false,
                 step,
             });
-        } catch(error) {
+        } catch(e) {
+            const code = e.response.status;
+            // Fetch for info failed
             let step = STEP_1;
+            let error = 'Configuration Needed';
 
-            if(!error) {
+            if(code !== 404) {
                 step = STEP_ERROR;
+                error = "Something went wrong :(";
             } 
 
             this.setState({
                 loading: false,
-                step
+                step,
+                error,
             });
         }
     }
 
+    /**
+     * _onStep1Submit
+     * 
+     * Send Github login name and fetch relevent information
+     * 
+     * @param {Object} data 
+     * @memberof Config
+     */
     async _onStep1Submit(data) {
         const { auth } = this.state;
-        this._displaySavingOverylay();
+        displaySavingOverylay('Fetching Information');
 
         try {
             let user = await setBroadcasterGithubInfo(data, auth);;
@@ -171,18 +196,25 @@ class Config extends Component {
         } catch(error) {
             this.setState({
                 error: true,
-                message: error,
             });
         };
 
-        this._hideOverlay();
+        hideOverlay();
     }
 
+    /**
+     * _onStep2Submit
+     * 
+     * Submit and save user selected repositories
+     * 
+     * @param {Object} data 
+     * @memberof Config
+     */
     async _onStep2Submit(data) {
         const { auth } = this.state;
         let responseOk = true;
 
-        this._displaySavingOverylay();
+        displaySavingOverylay('Saving Repositories');
 
         try {
             let user = await setUserSelectedRepos(data, auth);
@@ -199,14 +231,23 @@ class Config extends Component {
             });
         }
        
-        this._hideOverlay();
+        hideOverlay();
         return responseOk;
     }
 
+    /**
+     * _onStep3Submit
+     * 
+     * Submit and save user ordering of repositories
+     * 
+     * @param {Array} selected_repos 
+     * @memberof Config
+     */
     async _onStep3Submit(selected_repos) {
         const { auth } = this.state;
         let responseOk = true;
-        this._displaySavingOverylay();
+
+        displaySavingOverylay('Saving Order');
 
         try {
             await selectedReposOrder(selected_repos, auth);
@@ -223,16 +264,31 @@ class Config extends Component {
             });
         }
 
-        this._hideOverlay();
+        hideOverlay();
         return responseOk;
     }
 
+    /**
+     * _onClickRefresh
+     * 
+     * User clicked the refresh button
+     * 
+     * @memberof Config
+     */
     _onClickRefresh() {
+        // Set state to freshing and request update to users repos
         this.setState({
             refresh_repos: true,
         }, () => this._refreshUserRepos());
     }
 
+    /**
+     * _refreshUserRepos
+     * 
+     * Request EBS to refresh the cached list of user repositories
+     * 
+     * @memberof Config
+     */
     async _refreshUserRepos() {
         try {
             const { auth } = this.state;
@@ -255,26 +311,7 @@ class Config extends Component {
         }
     }
 
-    _displaySavingOverylay() {
-        // initialize modal element
-        var modalEl = document.createElement('div');
-        modalEl.innerHTML = '<div style="padding-top: 25%;height: 100%;" class="mui--align-middle mui--text-center"><h1>saving...</h1></div>';
-        modalEl.style.width = '400px';
-        modalEl.style.height = '300px';
-        modalEl.style.margin = '100px auto';
-        modalEl.style.backgroundColor = '#fff';
-
-        // show modal
-        window.mui.overlay('on', {
-            static: true
-        }, modalEl);
-    }
-
-    _hideOverlay() {
-        window.mui.overlay('off');
-    }
-
-    _goBack() {
+    _goStep1() {
         this.setState({
             step: STEP_1,
         });
@@ -301,47 +338,6 @@ class Config extends Component {
         );
     }
 
-    _appBar() {
-        let  title = '';
-        let leftNavButton = <td className="mui--appbar-height mui--text-center" />
-        let rightNavButton = <td className="mui--appbar-height mui--text-center"/>
-
-        // Left Nav Button
-        if (this.state.step === STEP_2) {
-            leftNavButton = <td className="mui--appbar-height mui--text-center mui--divider-right" onClick={this._goBack}><div class="mui--text-button">Back</div></td>
-
-            if (this.state.user.selected_repos && this.state.user.selected_repos.length > 0) {
-                rightNavButton = <td className="mui--appbar-height mui--text-center mui--divider-left" onClick={this._goStep3}><div class="mui--text-button">Step 3</div></td>
-            }
-
-            title = 'Select Your Repositories';
-        } else if (this.state.step === STEP_3) {
-            leftNavButton = <td className="mui--appbar-height mui--text-center mui--divider-right" onClick={this._goStep2}><div class="mui--text-button">Back</div></td>
-            title = 'Order Your Projects';
-        } else if (this.state.step === STEP_1) {
-            title = 'Enter Your GitHub Username';
-        }
-
-        // Right Nav Buttons
-        if(this.state.user && this.state.step === STEP_1) {
-            rightNavButton = <td className="mui--appbar-height mui--text-center mui--divider-left" onClick={this._goStep2}><div class="mui--text-button">Step 2</div></td>
-        }
-
-        return(
-            <div className="mui-appbar">
-                <HeaderTable>
-                    <tr>
-                        {leftNavButton}
-                        <td className="mui--appbar-height mui--text-center">
-                            <div class="mui--text-headline">{title}</div>
-                        </td>
-                        {rightNavButton}
-                    </tr>
-                </HeaderTable>
-            </div>
-        );
-    }
-
     scrollConfigContinerUp() {
         const element = document.getElementById('config-container');
         // Scroll to top between views
@@ -350,6 +346,11 @@ class Config extends Component {
         }
     }
 
+    /**
+     * displayForm
+     * 
+     * Selects the form to display based off the step user is on
+     */
     displayForm() {
         let {step, loading, user, refresh_repos} = this.state;
 
@@ -387,7 +388,15 @@ class Config extends Component {
         }        
     }
 
-    _getPreviewRepos(){
+    /**
+     * _getSelectedRepoObjects
+     * 
+     * Gets the list of selected repository data
+     * 
+     * @returns {Array}
+     * @memberof Config
+     */
+    _getSelectedRepoObjects(){
         let { user } = this.state;
 
         if(!user || !user.repos || !user.selected_repos) return [];
@@ -398,21 +407,21 @@ class Config extends Component {
     }
 
     render() {
-        let { user, loading, error } = this.state;
-        let previewRepos = this._getPreviewRepos();
+        let { user, loading, error, step } = this.state;
+        let previewRepos = this._getSelectedRepoObjects();
 
         return(
             <Container>
                 <ConfigContainer id="config-container">
-                    {this._appBar()}
+                    <ConfigAppBar step={step} user={user} goStep1={this._goStep1} goStep2={this._goStep2} goStep3={this._goStep3} />
                     <FormContainer>
                         {this.displayForm()}
                     </FormContainer>
                     {error ? <div className="mui--bg-danger">Opps, something went wrong. Please try again.</div>: ''}
                 </ConfigContainer>
                 <LiveContainer className="mui--z5">
-                    <GithubProjectsPanel user={user} loading={loading} repos={previewRepos} />
-                </LiveContainer>               
+                    <GithubProjectsPanel user={user} loading={loading} repos={previewRepos} error={error} />
+                </LiveContainer>
             </Container>
         );
     }

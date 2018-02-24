@@ -30,6 +30,12 @@ const LoaderStyled = styled.div`
     animation: ${animation} 1.2s infinite ease-in-out;
 `;
 
+/**
+ * Loader
+ * 
+ * Component that displays an animated loading square
+ * @returns {Object} JSX
+ */
 const Loader = () => (
     <LoaderStyled />
 );
