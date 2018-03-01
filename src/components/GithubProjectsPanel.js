@@ -58,6 +58,11 @@ const UsernameText = H3.extend`
     white-space: nowrap;
 `;
 
+const Img = styled.img`
+    height: 30px;
+    width: 30px;
+`;
+
 /**
  * _projectRows
  * 
@@ -95,7 +100,7 @@ const _heroSection = (user) => {
     return (
         <HeroProjectContainer>
             <ProfileImageContainer>
-                <img src={`${user.github_user.avatar_url}&s=30`} alt="avatar" />
+                <Img src={`${user.github_user.avatar_url}&s=30`} alt="avatar" />
             </ProfileImageContainer>
             <UsernameText onClick={ () => window.open(`https://github.com/${user.github_user.login}`) }>{user.github_user.login}</UsernameText>
         </HeroProjectContainer>
