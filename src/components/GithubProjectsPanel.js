@@ -75,10 +75,10 @@ const _projectRows = (repos) => {
     if (!repos || !repos.length) {
         return <div className="mui--text-center mui--text-headline">No Repositories</div>;
     }
-
+    
     let rows = repos.map((repo) => {
         return (
-            <ProjectListItem key={repo.id} onClick={() => window.open(repo.html_url, '_blank')} repo={repo} />
+            <ProjectListItem key={repo.id} repo={repo} />
         );
     })
 

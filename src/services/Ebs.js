@@ -1,6 +1,8 @@
 import axios from "axios";
+import { VERSION } from '../constants/version';
 
 const EBS_ROOT_URL = 'https://us-central1-projects-twitch-extension.cloudfunctions.net';
+// const EBS_ROOT_URL = 'http://localhost:5000/projects-twitch-extension/us-central1';
 
 /**
  * getBoardcasterGithubInfo
@@ -61,6 +63,7 @@ export const setUserSelectedRepos = async (data, auth) => {
         },
         headers: {
             'x-extension-jwt': auth.token,
+            'version': VERSION
         }
     });
 

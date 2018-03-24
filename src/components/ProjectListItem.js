@@ -48,6 +48,17 @@ const Item = styled.div`
     cursor: ${props => props.draggable? 'move' : 'pointer' };
     overflow: hidden;
     
+    a {
+        flex-direction: column;
+        display: flex;
+        height: 100%;
+        color: rgba(0,0,0,.87);
+
+        &:focus, &:hover {
+            text-decoration: none;
+        }
+    }
+
     &:first-child {
         border-top-width: 0px;
         height: 130px;
@@ -91,11 +102,13 @@ function ProjectListItem ({ repo, onClick, draggable}) {
     const pill_color = Colors[repo.language];
 
     return(
-        <Item key={repo.id} onClick={onClick} draggable={draggable} >
-            <H3>{repo.name}</H3>
-            <Text>{repo.full_name}</Text>
-            <Subtext>{repo.description}</Subtext>
-            <LanguageText><div>{repo.language ? <PillaMaThing color={pill_color} /> : '' }{repo.language}</div></LanguageText>
+        <Item key={repo.id} draggable={draggable} >
+            <a href={repo.html_url} target="_blank">
+                <H3>{repo.name}</H3>
+                <Text>{repo.full_name}</Text>
+                <Subtext>{repo.description}</Subtext>
+                <LanguageText><div>{repo.language ? <PillaMaThing color={pill_color} /> : '' }{repo.language}</div></LanguageText>
+            </a>
         </Item>
     );
 }

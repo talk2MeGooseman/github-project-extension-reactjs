@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import GithubProjectsPanel from '../components/GithubProjectsPanel';
 import { viewBroadcasterData } from "../services/Ebs";
+const Twitch = window['Twitch'];
 
 /**
  * Viewer
@@ -22,7 +23,7 @@ export default class Viewer extends Component {
     componentDidMount() {
         // Twitch extension library
         // Listen for used auth even to get token
-        window.Twitch.ext.onAuthorized( (auth) => {
+        Twitch.ext.onAuthorized( (auth) => {
             // Update state and begin rendering panel
             this.setState({
                 auth

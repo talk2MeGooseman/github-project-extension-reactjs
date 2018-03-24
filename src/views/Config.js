@@ -16,6 +16,7 @@ import {
   selectedReposOrder,
   refreshUserRepos,
 } from "../services/Ebs";
+const Twitch = window['Twitch'];
 
 /** User needs to input Github login */
 const STEP_1 = 1;
@@ -110,7 +111,7 @@ class Config extends Component {
 
     componentDidMount() {
         // Get user auth information from Twitch
-        window.Twitch.ext.onAuthorized( (auth) => {
+        Twitch.ext.onAuthorized( (auth) => {
             // Set auth info and then fetch broadcaster configuration
             this.setState({
                 auth
