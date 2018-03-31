@@ -4,16 +4,6 @@ import styled from "styled-components";
 import Loader from "../components/Loader";
 import ProjectListItem from '../components/ProjectListItem';
 
-const Container = styled.div`
-    width: 100%;
-    height: 500px;
-    overflow-x: hidden; 
-    overflow-y: hidden;
-    display: flex;
-    flex-direction: column;
-    font-family: Helvetica Neue, Helvetica;
-    background-color: #FFFFFF;
-`;
 
 const HeroProjectContainer = styled.div`
     display: flex;
@@ -138,7 +128,18 @@ const _titleBar = () => {
  * @param {Array} repos 
  * @param {String} error
  */
-const _displayContent = (user, loading, repos, error) => {
+const _displayContent = ({ user, loading, repos, error, customHeight }) => {
+    const Container = styled.div`
+        width: 100%;
+        height: ${ customHeight ? customHeight : '100vh'}; 
+        overflow-x: hidden; 
+        overflow-y: hidden;
+        display: flex;
+        flex-direction: column;
+        font-family: Helvetica Neue, Helvetica;
+        background-color: #FFFFFF;
+    `;
+
     // Display loader
     if (loading) {
         return (
@@ -177,8 +178,8 @@ const _displayContent = (user, loading, repos, error) => {
  * 
  * @param {Object} props
  */
-const GithubProjectsPanel = ({user, loading, repos, error}) => {
-    return _displayContent(user, loading, repos, error);
+const GithubProjectsPanel = (props) => {
+    return _displayContent(props);
 };
 
 GithubProjectsPanel.propTypes = {
@@ -186,6 +187,7 @@ GithubProjectsPanel.propTypes = {
     loading: PropTypes.bool,
     repos: PropTypes.array,
     error: PropTypes.string,
+    customHeight: PropTypes.string,
 }
 
 export default GithubProjectsPanel;

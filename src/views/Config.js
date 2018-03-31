@@ -421,7 +421,7 @@ class Config extends Component {
                     {error ? <div className="mui--bg-danger">Opps, something went wrong. Please try again.</div>: ''}
                 </ConfigContainer>
                 <LiveContainer className="mui--z5">
-                    <GithubProjectsPanel user={user} loading={loading} repos={previewRepos} error={error} />
+                    <GithubProjectsPanel customHeight={'500px'} user={user} loading={loading} repos={previewRepos} error={error} />
                 </LiveContainer>
             </Container>
         );
