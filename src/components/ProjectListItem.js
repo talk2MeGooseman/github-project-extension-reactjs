@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 import Colors from "../data/colors.json";
 import styled from "styled-components";
 
@@ -98,8 +99,8 @@ const PillaMaThing = styled.span`
  * 
  * @param {Object} repo, onClick, draggable
  */
-function ProjectListItem ({ repo, onClick, draggable}) {
-    const pill_color = Colors[repo.language];
+function ProjectListItem ({ repo={}, onClick, draggable}) {
+    const pillColor = Colors[repo.language];
 
     return(
         <Item key={repo.id} draggable={draggable} >
@@ -107,10 +108,22 @@ function ProjectListItem ({ repo, onClick, draggable}) {
                 <H3>{repo.name}</H3>
                 <Text>{repo.full_name}</Text>
                 <Subtext>{repo.description}</Subtext>
-                <LanguageText><div>{repo.language ? <PillaMaThing color={pill_color} /> : '' }{repo.language}</div></LanguageText>
+                <LanguageText><div>{repo.language ? <PillaMaThing color={pillColor} /> : '' }{repo.language}</div></LanguageText>
             </a>
         </Item>
     );
 }
+
+ProjectListItem.propTypes = {
+    onClick: PropTypes.func,
+    draggable: PropTypes.bool,
+    repo: PropTypes.shape({
+        id: PropTypes.string,
+        name: PropTypes.string,
+        full_name: PropTypes.string,
+        description: PropTypes.string,
+        language: PropTypes.string,
+    })
+};
 
 export default ProjectListItem;
