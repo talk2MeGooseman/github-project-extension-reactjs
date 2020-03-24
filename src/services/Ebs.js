@@ -1,20 +1,20 @@
 import axios from "axios";
 import { VERSION } from '../constants/version';
 
-const EBS_ROOT_URL = 'https://us-central1-projects-twitch-extension.cloudfunctions.net';
-// const EBS_ROOT_URL = 'http://localhost:5000/projects-twitch-extension/us-central1';
+const EBS_ROOT_URL = 'https://twitch-github-projects.azurewebsites.net/api';
+// const EBS_ROOT_URL = 'http://localhost:7071/api';
 
 /**
  * getBoardcasterGithubInfo
- * 
+ *
  * Fetch user Github panel configuration
- * 
- * @param {Object} auth 
+ *
+ * @param {Object} auth
  */
 export const getBroadcasterGithubInfo = async (auth) => {
     let response = await axios({
         method: 'GET',
-        url: `${EBS_ROOT_URL}/getBroadcasterGithubInfo`,
+        url: `${EBS_ROOT_URL}/BroadcasterConfiguration`,
         headers: {
             'x-extension-jwt': auth.token,
         }
@@ -24,17 +24,17 @@ export const getBroadcasterGithubInfo = async (auth) => {
 };
 
 /**
- * setBroadcasterGithubInfo 
+ * setBroadcasterGithubInfo
  *
  * Set the users Github login information and fetch it
- *  
+ *
  * @param {Object} data - github user login info
- * @param {auth} auth 
+ * @param {auth} auth
  */
 export const setBroadcasterGithubInfo = async (data, auth) => {
     let response = await axios({
         method: 'POST',
-        url: `${EBS_ROOT_URL}/setBroadcasterGithubInfo`,
+        url: `${EBS_ROOT_URL}/CreateBroadcasterConfiguration`,
         data: {
             data
         },
@@ -48,16 +48,16 @@ export const setBroadcasterGithubInfo = async (data, auth) => {
 
 /**
  * setUserSelectedRepos
- * 
+ *
  * Set the repositories the user has selected for display
- * 
- * @param {Object} data 
- * @param {Object} auth 
+ *
+ * @param {Object} data
+ * @param {Object} auth
  */
 export const setUserSelectedRepos = async (data, auth) => {
     let response = await axios({
         method: 'POST',
-        url: `${EBS_ROOT_URL}/setUserSelectedRepos`,
+        url: `${EBS_ROOT_URL}/BroadcasterSelectedRepositories`,
         data: {
             data
         },
@@ -72,40 +72,29 @@ export const setUserSelectedRepos = async (data, auth) => {
 
 /**
  * selectedReposOrder
- * 
+ *
  * Set the order in which the user would like to
  * display their repositories
- * 
- * @param {Array} selected_repos 
- * @param {Object} auth 
+ *
+ * @param {Array} selected_repos
+ * @param {Object} auth
  */
 export const selectedReposOrder= async (selected_repos, auth) => {
-    let response = await axios({
-        method: 'POST',
-        url: `${EBS_ROOT_URL}/selectedReposOrder`,
-        data: {
-            selected_repos
-        },
-        headers: {
-            'x-extension-jwt': auth.token,
-        }
-    });
-
-    return response.data;
+    return await setUserSelectedRepos(selected_repos, auth);
 };
 
 /**
  * viewBroadcasterData
- * 
+ *
  * Fetch Github information for display in the panel
- * 
+ *
  * @param {Object} auth - Twitch auth object
  * @returns {Object} Object with user and repos attributes
  */
 export const viewBroadcasterData = async (auth) => {
     let response = await axios({
         method: 'GET',
-        url: `${EBS_ROOT_URL}/viewBroadcasterData`,
+        url: `${EBS_ROOT_URL}/fetchChannel`,
         headers: {
             'x-extension-jwt': auth.token,
         }
@@ -116,15 +105,15 @@ export const viewBroadcasterData = async (auth) => {
 
 /**
  * refreshUserRepos
- * 
+ *
  * Request to update cached users repositories
- * 
- * @param {Object} auth 
+ *
+ * @param {Object} auth
  */
 export const refreshUserRepos = async (auth) => {
     let response = await axios({
         method: 'GET',
-        url: `${EBS_ROOT_URL}/refreshUsersRepos`,
+        url: `${EBS_ROOT_URL}/RefreshBroadcasterConfiguration`,
         headers: {
             'x-extension-jwt': auth.token,
         }

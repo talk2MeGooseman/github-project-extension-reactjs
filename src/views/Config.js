@@ -26,7 +26,7 @@ const STEP_2 = 2;
 const STEP_3 = 3;
 const STEP_ERROR = 1000;
 
-/** 
+/**
 title Step 1 Form Submission
 
 UI -> UI: Input github username
@@ -38,7 +38,7 @@ Github->Backend: Repos list
 
 */
 
-/** 
+/**
 title Step 2 Form
 
 UI->Backend: Fetches Cached User info and Repos list
@@ -46,7 +46,7 @@ Backend->UI: Return user info and repos list
 UI->UI: User selects repos they want to show up
 UI->Backend: Submit repos selected
 Backend->Backend: Persist
-Backend-> UI: Send OK 
+Backend-> UI: Send OK
 */
 
 const Container = styled.div`
@@ -86,9 +86,9 @@ const LoadingContainer = styled.div`
 
 /**
  * Config
- * 
+ *
  * Config view for broadcaster to setup their panel
- * 
+ *
  * @class Config
  * @extends {Component}
  */
@@ -122,12 +122,12 @@ class Config extends Component {
     /**
      * Fetch the broadcasters configuration information so we know what
      * step they are on
-     * 
+     *
      * @memberof Config
      */
     async _getBroadcastconfig() {
         const { auth } = this.state;
-        
+
         // Check if we have authed
         if(!auth) {
             this.setState({
@@ -144,9 +144,9 @@ class Config extends Component {
             let step;
             // Check if they have selected their repos yet
             if (user.selected_repos && user.selected_repos.length > 0) {
-               step = STEP_3; 
+               step = STEP_3;
             } else {
-               step = STEP_2; 
+               step = STEP_2;
             }
 
             this.setState({
@@ -163,7 +163,7 @@ class Config extends Component {
             if(code !== 404) {
                 step = STEP_ERROR;
                 error = "Something went wrong :(";
-            } 
+            }
 
             this.setState({
                 loading: false,
@@ -175,10 +175,10 @@ class Config extends Component {
 
     /**
      * _onStep1Submit
-     * 
+     *
      * Send Github login name and fetch relevent information
-     * 
-     * @param {Object} data 
+     *
+     * @param {Object} data
      * @memberof Config
      */
     async _onStep1Submit(data) {
@@ -187,7 +187,7 @@ class Config extends Component {
 
         try {
             let user = await setBroadcasterGithubInfo(data, auth);;
-            
+
             this.setState({
                 user,
                 loading: false,
@@ -205,10 +205,10 @@ class Config extends Component {
 
     /**
      * _onStep2Submit
-     * 
+     *
      * Submit and save user selected repositories
-     * 
-     * @param {Object} data 
+     *
+     * @param {Object} data
      * @memberof Config
      */
     async _onStep2Submit(data) {
@@ -222,7 +222,7 @@ class Config extends Component {
 
             this.setState({
                 user: user,
-                step: STEP_3, 
+                step: STEP_3,
                 error: false,
             });
         } catch (error) {
@@ -231,17 +231,17 @@ class Config extends Component {
                 error: true,
             });
         }
-       
+
         hideOverlay();
         return responseOk;
     }
 
     /**
      * _onStep3Submit
-     * 
+     *
      * Submit and save user ordering of repositories
-     * 
-     * @param {Array} selected_repos 
+     *
+     * @param {Array} selected_repos
      * @memberof Config
      */
     async _onStep3Submit(selected_repos) {
@@ -271,9 +271,9 @@ class Config extends Component {
 
     /**
      * _onClickRefresh
-     * 
+     *
      * User clicked the refresh button
-     * 
+     *
      * @memberof Config
      */
     _onClickRefresh() {
@@ -285,9 +285,9 @@ class Config extends Component {
 
     /**
      * _refreshUserRepos
-     * 
+     *
      * Request EBS to refresh the cached list of user repositories
-     * 
+     *
      * @memberof Config
      */
     async _refreshUserRepos() {
@@ -349,7 +349,7 @@ class Config extends Component {
 
     /**
      * displayForm
-     * 
+     *
      * Selects the form to display based off the step user is on
      */
     displayForm() {
@@ -386,14 +386,14 @@ class Config extends Component {
             }
 
             return <h1>Sorry but were having trouble getting your info :(</h1>
-        }        
+        }
     }
 
     /**
      * _getSelectedRepoObjects
-     * 
+     *
      * Gets the list of selected repository data
-     * 
+     *
      * @returns {Array}
      * @memberof Config
      */
