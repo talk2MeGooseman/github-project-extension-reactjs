@@ -1,0 +1,23 @@
+curl --data-binary @- https://api.github.com/graphql <<EOF
+{
+ "query": "query {
+  user(login:\"talk2megooseman\") {
+    pinnedItems(first: 20) {
+      totalCount
+      edges {
+        node {
+          ... on Repository {
+            name
+            description
+          }
+          ... on Gist {
+            name
+            description
+          }
+        }
+      }
+    }
+  }
+}"
+}
+EOF

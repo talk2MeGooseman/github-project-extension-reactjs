@@ -1,0 +1,4 @@
+{
+  "extends": ["react-app", "plugin:jsx-a11y/recommended", "prettier", "plugin:primer-react/recommended"],
+  "plugins": ["jsx-a11y"]
+}
