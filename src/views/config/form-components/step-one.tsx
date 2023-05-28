@@ -4,10 +4,16 @@ import { useForm } from "react-hook-form";
 import { useStateMachine } from "little-state-machine";
 import { updateAction } from "../../../state/update-action";
 
+type FormValues = {
+  username: string;
+};
+
 export const StepOne = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
   const { actions, state } = useStateMachine({ updateAction });
-  const onSubmit = (data) => {
+  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
+    defaultValues: { username: state.username }
+  });
+  const onSubmit = (data: FormValues) => {
     actions.updateAction(data);
   };
 

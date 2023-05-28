@@ -1,13 +1,20 @@
 import React from 'react';
 import { BaseStyles, ThemeProvider, Box, SplitPageLayout } from '@primer/react'
 import { getUserRepos } from '../../services/github';
-import { StepOne, StepTwo } from './form-components';
+import { StepOne, StepThree, StepTwo } from './form-components';
 import {
   StateMachineProvider,
   createStore,
 } from 'little-state-machine';
 
-createStore({});
+createStore({
+    username: undefined,
+    repos: [],
+  },
+  {
+    persist: 'none'
+  },
+);
 
 export const Config = () => {
   return (
@@ -23,7 +30,7 @@ export const Config = () => {
                 <StepTwo />
               </SplitPageLayout.Pane>
               <SplitPageLayout.Content>
-                <input type="submit" />
+                <StepThree />
               </SplitPageLayout.Content>
             </SplitPageLayout>
           </Box>
