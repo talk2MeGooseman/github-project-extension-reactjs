@@ -1,5 +1,4 @@
-
-export const getUserRepos = async (username: string) => {
+export const getUserRepos = async (username: string): Promise<GithubRepo[]> => {
   const response = await fetch(
     `https://api.github.com/users/${username}/repos`,
     {
