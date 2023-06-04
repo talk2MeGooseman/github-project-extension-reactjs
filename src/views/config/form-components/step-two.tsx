@@ -21,7 +21,7 @@ type GithubRepo = {
 }
 
 type FormValues = {
-  repos: Number[]
+  repos: string[]
 };
 
 const resolver: Resolver<FormValues> = async (values) => {
@@ -40,6 +40,7 @@ const resolver: Resolver<FormValues> = async (values) => {
 
 export const StepTwo = () => {
   const { actions, state } = useStateMachine({ updateAction });
+
   const { setValue, handleSubmit, formState: { errors }, getValues, watch } = useForm<FormValues>({
     defaultValues: {
       repos: state.repos,
@@ -60,24 +61,22 @@ export const StepTwo = () => {
       }
 
       getUserRepos(state.username)
-        .then(setUserRepos)
+        .then(setUserRepos).catch(console.error);
     }
 
     fetchData();
-    console.log('fetched')
-
     return;
   }, [state.username])
 
   const selectedRepos = getValues('repos');
 
-  const visibleOptions = userRepos.filter(({ id }) => selectedRepos.includes(id))
-  const hiddenOptions = userRepos.filter(({ id }) => !selectedRepos.includes(id))
+  const visibleOptions = userRepos.filter(({ name }) => selectedRepos.includes(name))
+  const hiddenOptions = userRepos.filter(({ name }) => !selectedRepos.includes(name))
 
-  const toggle = useCallback((id: number) => {
-    const newSelectedRepos = selectedRepos.includes(id)
-      ? selectedRepos.filter((repoId) => repoId !== id)
-      : [...selectedRepos, id];
+  const toggle = useCallback((name: string) => {
+    const newSelectedRepos = selectedRepos.includes(name)
+      ? selectedRepos.filter((repoId) => repoId !== name)
+      : [...selectedRepos, name];
 
     setValue('repos', newSelectedRepos);
   }, [selectedRepos, setValue])
@@ -93,7 +92,7 @@ export const StepTwo = () => {
             </FormControl.Validation>
           }
           {visibleOptions.map(option => (
-            <ActionList.Item key={option.id} selected={true} onSelect={() => toggle(option.id)}>
+            <ActionList.Item key={option.id} selected={true} onSelect={() => toggle(option.name)}>
               {option.name}
             </ActionList.Item>
           ))}
@@ -106,7 +105,7 @@ export const StepTwo = () => {
           }
         >
           {hiddenOptions.map((option, index) => (
-            <ActionList.Item key={option.id} selected={false} onSelect={() => toggle(option.id)}>
+            <ActionList.Item key={option.id} selected={false} onSelect={() => toggle(option.name)}>
               {option.name}
             </ActionList.Item>
           ))}

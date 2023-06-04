@@ -5,6 +5,7 @@
   "proxy": "http://localhost:5000",
   "dependencies": {
     "@primer/react": "^35.25.1",
+    "@primer/styled-octicons": "^19.1.0",
     "little-state-machine": "^4.8.0",
     "ramda": "^0.29.0",
     "ramda-extension": "^0.12.0",
