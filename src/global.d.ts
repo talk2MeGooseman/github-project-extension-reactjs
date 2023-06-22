@@ -20,3 +20,5 @@ export type GithubRepo = {
   forks_count: number;
   open_issues_count: number;
 }
+
+export type SortableGithubRepo = GithubRepo & { chosen: boolean };
