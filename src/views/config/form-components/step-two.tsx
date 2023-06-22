@@ -5,20 +5,7 @@ import { useStateMachine } from "little-state-machine";
 import { updateAction } from "../../../state/update-action";
 import { getUserRepos } from "../../../services/github";
 import { isNilOrEmpty } from 'ramda-extension';
-
-type GithubRepo = {
-  id: number;
-  name: string;
-  description: string;
-  html_url: string;
-  created_at: string;
-  updated_at: string;
-  pushed_at: string;
-  language: string;
-  stargazers_count: number;
-  forks_count: number;
-  open_issues_count: number;
-}
+import type { GithubRepo } from "../../../global";
 
 type FormValues = {
   repos: string[]
@@ -85,7 +72,7 @@ export const StepTwo = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Button type="submit">Next</Button>
       <ActionList selectionVariant="multiple">
-        <ActionList.Group title="Selected Repositories">
+        <ActionList.Group title="Select Your Repositories To Display">
           {errors.repos &&
             <FormControl.Validation id="custom-input-validation" variant="error">
               {errors.repos && errors.repos.message}
@@ -98,7 +85,6 @@ export const StepTwo = () => {
           ))}
         </ActionList.Group>
         <ActionList.Group
-          title="Unselected Repositories"
           selectionVariant={
             /** selectionVariant override on Group: disable selection if there are no options */
             hiddenOptions.length ? 'multiple' : false
@@ -109,7 +95,6 @@ export const StepTwo = () => {
               {option.name}
             </ActionList.Item>
           ))}
-          {hiddenOptions.length === 0 && <ActionList.Item disabled>No hidden fields</ActionList.Item>}
         </ActionList.Group>
       </ActionList>
     </form>

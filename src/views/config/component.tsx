@@ -8,9 +8,9 @@ import {
 } from 'little-state-machine';
 
 createStore({
-    username: undefined,
-    repos: [],
-  },
+  username: undefined,
+  repos: [],
+},
   {
     persist: 'none'
   },
