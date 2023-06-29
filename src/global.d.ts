@@ -1,9 +1,11 @@
+import { graphql } from "@octokit/graphql/dist-types/types";
 import "little-state-machine";
 
 declare module "little-state-machine" {
   interface GlobalState {
     username?: string;
     repos: string[];
+    fetching: boolean;
   }
 }
 
@@ -22,3 +24,12 @@ export type GithubRepo = {
 }
 
 export type SortableGithubRepo = GithubRepo & { chosen: boolean };
+
+interface Window {
+  Twitch: unknown
+}
+
+interface AuthContextType {
+  channelId?: string
+  loading: boolean
+}

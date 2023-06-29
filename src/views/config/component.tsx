@@ -1,41 +1,63 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BaseStyles, ThemeProvider, Box, SplitPageLayout } from '@primer/react'
-import { getUserRepos } from '../../services/github';
 import { StepOne, StepThree, StepTwo } from './form-components';
 import {
-  StateMachineProvider,
-  createStore,
+  useStateMachine,
 } from 'little-state-machine';
+import { useQuery } from 'urql';
+import { ChannelQuery } from '../../shared';
+import { dotPath } from 'ramda-extension'
+import { updateAction } from '../../state/update-action';
 
-createStore({
-  username: undefined,
-  repos: [],
-},
-  {
-    persist: 'none'
-  },
-);
+const getUsername = dotPath('channel.githubProjectsConfig.username');
+const getRepos = dotPath('channel.githubProjectsConfig.repos');
 
 export const Config = () => {
+  const { actions, state } = useStateMachine({ updateAction });
+  const [{ data, error, fetching }] = useQuery({
+    query: ChannelQuery,
+  });
+
+  const username = getUsername(data);
+  const repos = getRepos(data);
+
+  useEffect(() => {
+    if (!username || !repos || fetching) {
+      return;
+    }
+
+    actions.updateAction({
+      username: getUsername(data),
+      repos: getRepos(data),
+      fetching: false,
+    });
+  }, [actions, data, fetching, repos, username]);
+
+  if (state.fetching) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
-    <StateMachineProvider>
-      <ThemeProvider colorMode="day">
-        <BaseStyles>
-          <Box>
-            <SplitPageLayout>
-              <SplitPageLayout.Header>
-                <StepOne />
-              </SplitPageLayout.Header>
-              <SplitPageLayout.Pane>
-                <StepTwo />
-              </SplitPageLayout.Pane>
-              <SplitPageLayout.Content>
-                <StepThree />
-              </SplitPageLayout.Content>
-            </SplitPageLayout>
-          </Box>
-        </BaseStyles>
-      </ThemeProvider>
-    </StateMachineProvider>
+    <ThemeProvider colorMode="day">
+      <BaseStyles>
+        <Box>
+          <SplitPageLayout>
+            <SplitPageLayout.Header>
+              <StepOne />
+            </SplitPageLayout.Header>
+            <SplitPageLayout.Pane>
+              <StepTwo />
+            </SplitPageLayout.Pane>
+            <SplitPageLayout.Content>
+              <StepThree />
+            </SplitPageLayout.Content>
+          </SplitPageLayout>
+        </Box>
+      </BaseStyles>
+    </ThemeProvider>
   );
 }

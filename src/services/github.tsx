@@ -27,6 +27,7 @@ const getRepo = async (username: string, repoName: string): Promise<GithubRepo> 
 }
 
 export const getRepos = async (username: string, repoNames: string[]): Promise<GithubRepo[]> => {
+  console.log("getRepos")
   const repos = await Promise.all(
     repoNames.map((repoName) => getRepo(username, repoName))
   );

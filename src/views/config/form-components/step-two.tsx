@@ -6,6 +6,7 @@ import { updateAction } from "../../../state/update-action";
 import { getUserRepos } from "../../../services/github";
 import { isNilOrEmpty } from 'ramda-extension';
 import type { GithubRepo } from "../../../global";
+import { sortReposByState } from "../../../shared/sort-repos-by-state";
 
 type FormValues = {
   repos: string[]
@@ -27,20 +28,22 @@ const resolver: Resolver<FormValues> = async (values) => {
 
 export const StepTwo = () => {
   const { actions, state } = useStateMachine({ updateAction });
-
+  console.log('state', { state })
   const { setValue, handleSubmit, formState: { errors }, getValues, watch } = useForm<FormValues>({
     defaultValues: {
       repos: state.repos,
     },
     resolver
   });
+
   watch('repos')
+
   const [userRepos, setUserRepos] = useState<GithubRepo[]>([]);
+
   const onSubmit = (data) => {
     actions.updateAction(data);
   };
 
-  // Fetch the user's repos from GitHub
   useEffect(() => {
     async function fetchData() {
       if (!state.username) {
@@ -48,12 +51,14 @@ export const StepTwo = () => {
       }
 
       getUserRepos(state.username)
-        .then(setUserRepos).catch(console.error);
+        .then((repos) =>  sortReposByState(repos, state.repos))
+        .then(setUserRepos)
+        .catch(console.error);
     }
 
     fetchData();
     return;
-  }, [state.username])
+  }, [state.repos, state.username])
 
   const selectedRepos = getValues('repos');
 
@@ -61,6 +66,8 @@ export const StepTwo = () => {
   const hiddenOptions = userRepos.filter(({ name }) => !selectedRepos.includes(name))
 
   const toggle = useCallback((name: string) => {
+    // when toggling a repo to be selected, need to append to the end of the list, not the beginning
+
     const newSelectedRepos = selectedRepos.includes(name)
       ? selectedRepos.filter((repoId) => repoId !== name)
       : [...selectedRepos, name];
