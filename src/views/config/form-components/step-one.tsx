@@ -24,8 +24,6 @@ export const StepOne = () => {
           Your GitHub Username
         </FormControl.Label>
         <TextInput
-          captionChildren="Enter your username, for example &quot;talk2megooseman&quot;"
-          labelChildren="Your GitHub Username"
           loaderPosition="auto"
           size="medium"
           type="text"
@@ -36,10 +34,10 @@ export const StepOne = () => {
           defaultValue={state.username}
         />
         <FormControl.Caption>
-          Enter your username, for example "talk2megooseman"
+          Example "talk2megooseman"
         </FormControl.Caption>
       </FormControl>
-      <Button type="submit">Next</Button>
+      <Button type="submit" sx={{marginTop: '1rem'}} block>Set Username</Button>
     </form>
   )
 }

@@ -51,7 +51,7 @@ export const StepTwo = () => {
       }
 
       getUserRepos(state.username)
-        .then((repos) =>  sortReposByState(repos, state.repos))
+        .then((repos) => sortReposByState(repos, state.repos))
         .then(setUserRepos)
         .catch(console.error);
     }
@@ -77,7 +77,7 @@ export const StepTwo = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Button type="submit">Next</Button>
+      <Button type="submit" block>Set Repos</Button>
       <ActionList selectionVariant="multiple">
         <ActionList.Group title="Select Your Repositories To Display">
           {errors.repos &&

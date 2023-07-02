@@ -4,19 +4,20 @@ import { ReactSortable } from "react-sortablejs"
 import { SortableGithubRepo } from "../global"
 import { ListItem } from "./list-item"
 
-// TODO - Disable sorting when we to the viewer side
-export const List = ({SortableActionList, userRepos, setUserRepos, state }) => {
+export const List = ({ SortableActionList, userRepos, setUserRepos, state, disableSorting }) => {
+  // TODO: Fetch the users information so that we can get a link to their profile photo
+
   const renderItem = useCallback(
     (repo: SortableGithubRepo) => {
       return (
-        <ListItem key={repo.name} {...repo} />
+        <ListItem sortingDisabled={disableSorting} key={repo.name} {...repo} />
       )
     },
-    [],
+    [disableSorting],
   )
 
-  return (<Box sx={{ height: 500, width: 318, overflowY: 'auto', border: '1px solid', borderColor: 'border.default' }}>
-    <Box>
+  return (
+    <Box sx={{ height: 500, width: 318, overflowY: 'auto', border: '1px solid', borderColor: 'border.default' }}>
       <Header sx={{
         position: 'sticky',
         top: 0,
@@ -30,18 +31,18 @@ export const List = ({SortableActionList, userRepos, setUserRepos, state }) => {
           </Header.Link>
         </Header.Item>
       </Header>
-    </Box>
-    <PageLayout padding='none'>
-      <PageLayout.Content>
-        <ReactSortable
-          tag={SortableActionList}
-          list={userRepos}
-          setList={setUserRepos}
-          animation={250}
-        >
-          {userRepos.map(renderItem)}
-        </ReactSortable>
-      </PageLayout.Content>
-    </PageLayout>
-  </Box>)
+      <PageLayout padding='none'>
+        <PageLayout.Content>
+          <ReactSortable
+            tag={SortableActionList}
+            list={userRepos}
+            setList={setUserRepos}
+            animation={250}
+            disabled={disableSorting}
+          >
+            {userRepos.map(renderItem)}
+          </ReactSortable>
+        </PageLayout.Content>
+      </PageLayout>
+    </Box>)
 }

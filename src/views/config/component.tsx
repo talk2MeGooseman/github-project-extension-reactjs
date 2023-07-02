@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BaseStyles, ThemeProvider, Box, SplitPageLayout } from '@primer/react'
+import { BaseStyles, ThemeProvider, Box, SplitPageLayout, Text } from '@primer/react'
 import { StepOne, StepThree, StepTwo } from './form-components';
 import {
   useStateMachine,
@@ -46,15 +46,33 @@ export const Config = () => {
       <BaseStyles>
         <Box>
           <SplitPageLayout>
-            <SplitPageLayout.Header>
-              <StepOne />
+            <SplitPageLayout.Header padding="condensed">
+              <Text as='p' sx={{fontWeight: 'bold'}}>
+                Thank you for installing the GitHub Projects extension! Getting started is easy, just follow the steps below.
+              </Text>
+              <Text as='ol'>
+                <Text as='li'>
+                  Enter your GitHub username and click 'Set Username'.
+                </Text>
+                <Text as='li'>
+                  Select the repositories you want to use and click 'Set Repos'.
+                </Text>
+                <Text as='li'>
+                  In the preview pane, drag and drop the repositories to the order you want them to appear to your viewers and click 'Save'.
+                </Text>
+              </Text>
+
+              <p className='text-italic'>That's it! You can always come back to select a new username or repository.</p>
             </SplitPageLayout.Header>
-            <SplitPageLayout.Pane>
-              <StepTwo />
+            <SplitPageLayout.Pane resizable padding="condensed">
+              <StepOne />
             </SplitPageLayout.Pane>
-            <SplitPageLayout.Content>
-              <StepThree />
+            <SplitPageLayout.Content width="medium" padding="condensed">
+              <StepTwo />
             </SplitPageLayout.Content>
+            <SplitPageLayout.Pane resizable position={'end'} padding="condensed">
+              <StepThree />
+            </SplitPageLayout.Pane>
           </SplitPageLayout>
         </Box>
       </BaseStyles>

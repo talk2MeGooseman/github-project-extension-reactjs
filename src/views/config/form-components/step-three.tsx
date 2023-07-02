@@ -1,4 +1,4 @@
-import { ActionList, Button } from "@primer/react";
+import { ActionList, Button, Heading } from "@primer/react";
 import { useStateMachine } from "little-state-machine";
 import { isEmpty, map } from 'ramda';
 import React, { forwardRef, useEffect } from "react";
@@ -58,9 +58,8 @@ export const StepThree = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      Preview & Confirm
-      <p>{state.repos.join(', ')}</p>
-      <Button type="submit">Save</Button>
+      <Button type="submit" block sx={{marginBottom: '1rem'}}>Save</Button>
+      <Heading sx={{fontSize: 1, mb: 2}}>Drag and drop the repositories to change the order in which they will be displayed.</Heading>
       <List SortableActionList={SortableActionList} userRepos={userRepos} setUserRepos={setUserRepos} state={state} />
     </form >
   )
