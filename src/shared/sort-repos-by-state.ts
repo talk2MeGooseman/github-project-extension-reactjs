@@ -1,3 +1,4 @@
-import { GithubRepo } from "../global";
+import { GithubRepository } from "../gql";
 
-export const sortReposByState = (repos: GithubRepo[], desiredOrder: string[]) => repos.sort((a, b) => desiredOrder.indexOf(a.name) - desiredOrder.indexOf(b.name));
+export const sortReposByState = (repos: GithubRepository[] = [], desiredOrder: string[]) =>
+  repos.sort((a, b) => desiredOrder.indexOf(a.nameWithOwner) - desiredOrder.indexOf(b.nameWithOwner));

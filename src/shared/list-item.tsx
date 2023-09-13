@@ -1,15 +1,19 @@
 /* eslint-disable primer-react/direct-slot-children */
-import { ActionList, LabelGroup, Token } from "@primer/react";
+import { ActionList, LabelGroup, Token, Truncate } from "@primer/react";
 import { RepoIcon, StarIcon } from "@primer/styled-octicons";
-import { isNotNil } from "ramda";
 import React from "react";
-import { SortableGithubRepo } from "../global";
+import { useQuery } from "urql";
+import { GithubRepositoryQuery } from "./graphql";
 
 
-type ListItemProps = SortableGithubRepo & { sortingDisabled: boolean };
+export type ListItemProps = { sortingDisabled: boolean, name: string, owner: string, chosen: boolean };
 
-export const ListItem = ({ name, description, language, stargazers_count, chosen, sortingDisabled, html_url }: ListItemProps) => {
+export const ListItem = ({ name, chosen, sortingDisabled, owner }: ListItemProps) => {
   const style = {};
+  const [{ data, fetching, error }] = useQuery({
+    query: GithubRepositoryQuery,
+    variables: { name, owner },
+  });
 
   if (chosen) {
     style['backgroundColor'] = 'bg.primary';
@@ -17,25 +21,39 @@ export const ListItem = ({ name, description, language, stargazers_count, chosen
 
   const ItemComponent = sortingDisabled ? ActionList.LinkItem : ActionList.Item;
 
+  if (fetching || error) {
+    return (<div>Loading...</div>);
+  }
+
+  const {
+    description,
+    url,
+    languages,
+    stargazerCount
+  } = data?.github?.repository ?? {};
+
   return (<ItemComponent
-    href={sortingDisabled ? undefined : html_url}
+    href={sortingDisabled ? undefined : url}
     active={chosen}
     sx={{
       minHeight: '95px',
       cursor: sortingDisabled ? undefined : 'move',
-      hover: {}
+      hover: {},
+      userSelect: sortingDisabled ? 'auto' : 'none'
     }}>
     <ActionList.LeadingVisual>
       <RepoIcon />
     </ActionList.LeadingVisual>
-    {name}
+    <Truncate title={name || ""}  sx={{maxWidth: 250}}>
+      {name}
+    </Truncate>
     <ActionList.Description variant='block'>
       <div>
         {description}
       </div>
       <LabelGroup>
-        { isNotNil(language) && <Token text={language} /> }
-        <Token text={stargazers_count} leadingVisual={StarIcon} />
+        {languages.map((lang) => <Token key={lang.id} text={lang.name} /> )}
+        <Token text={stargazerCount} leadingVisual={StarIcon} />
       </LabelGroup>
     </ActionList.Description>
   </ItemComponent>);

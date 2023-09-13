@@ -21,17 +21,31 @@ export type Github = {
   usersPinnedItems?: Maybe<Array<Maybe<GithubPinnedItem>>>;
   /** Get a list of user's repositories */
   usersRepositories?: Maybe<GithubUserRepositories>;
+  user: GithubUser;
+  repository: GithubRepository
 };
 
+
+export type GithubUser = {
+  avatar_url: Scalars['String']['output']
+  login: Scalars['String']['output']
+  name: Scalars['String']['output']
+  pronouns: Scalars['String']['output']
+  url: Scalars['String']['output']
+}
 
 export type GithubUsersPinnedItemsArgs = {
   username: Scalars['String']['input'];
 };
 
-
 export type GithubUsersRepositoriesArgs = {
   username: Scalars['String']['input'];
 };
+
+export type GithubRepositoryArgs = {
+  name: Scalars['String']['input'];
+  owner: Scalars['String']['input'];
+}
 
 export type GithubFile = {
   __typename?: 'GithubFile';
@@ -72,13 +86,14 @@ export type GithubProjectsConfig = {
 export type GithubRepository = {
   __typename?: 'GithubRepository';
   description?: Maybe<Scalars['String']['output']>;
-  forkCount?: Maybe<Scalars['Int']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
-  languages?: Maybe<Array<Maybe<GithubLanguage>>>;
-  name?: Maybe<Scalars['String']['output']>;
-  openGraphImageUrl?: Maybe<Scalars['String']['output']>;
-  stargazerCount?: Maybe<Scalars['Int']['output']>;
-  url?: Maybe<Scalars['String']['output']>;
+  forkCount: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  languages: Array<Maybe<GithubLanguage>>;
+  name: Scalars['String']['output'];
+  openGraphImageUrl: Maybe<Scalars['String']['output']>;
+  stargazerCount: Scalars['Int']['output'];
+  url: Scalars['String']['output'];
+  nameWithOwner: Scalars['String']['output'];
 };
 
 export type GithubUserRepositories = {

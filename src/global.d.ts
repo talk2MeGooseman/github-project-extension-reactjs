@@ -1,9 +1,8 @@
-import { graphql } from "@octokit/graphql/dist-types/types";
 import "little-state-machine";
 
 declare module "little-state-machine" {
   interface GlobalState {
-    username?: string;
+    username: string;
     repos: string[];
     fetching: boolean;
   }
@@ -23,7 +22,7 @@ export type GithubRepo = {
   open_issues_count: number;
 }
 
-export type SortableGithubRepo = GithubRepo & { chosen: boolean };
+export type SortableRepo ={ id: string, name: string, chosen: boolean, owner: string, nameWithOwner: string };
 
 interface Window {
   Twitch: unknown

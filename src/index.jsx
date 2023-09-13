@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import Viewer from "./views/Viewer";
+import { Viewer } from "./views/viewer";
 import { Config } from "./views/config";
 import AuthWrapper from "./shared/auth-wrapper";
 

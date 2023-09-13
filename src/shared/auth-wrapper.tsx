@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { AuthContextType } from '../global'
 import { AuthContext } from './auth-context';
 import { Client, Provider, cacheExchange, fetchExchange } from 'urql';
 import { StateMachineProvider, createStore } from 'little-state-machine';
 
 type StateType = {
-  loading: boolean,
-  channelId?: string,
-  client?: Client,
+  loading: boolean
+  channelId?: string
+  client?: Client
 }
 
 createStore({
-  username: undefined,
+  username: '',
   repos: [],
   fetching: true
 },

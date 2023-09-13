@@ -1,12 +1,14 @@
 import { ActionList, Button, FormControl } from "@primer/react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Resolver, useForm } from "react-hook-form";
 import { useStateMachine } from "little-state-machine";
 import { updateAction } from "../../../state/update-action";
-import { getUserRepos } from "../../../services/github";
 import { isNilOrEmpty } from 'ramda-extension';
-import type { GithubRepo } from "../../../global";
 import { sortReposByState } from "../../../shared/sort-repos-by-state";
+import { useQuery } from "urql";
+import { GithubUsersRepositoriesQuery } from "../../../shared";
+import { GithubRepository } from "../../../gql";
+import { equals } from "ramda";
 
 type FormValues = {
   repos: string[]
@@ -28,56 +30,56 @@ const resolver: Resolver<FormValues> = async (values) => {
 
 export const StepTwo = () => {
   const { actions, state } = useStateMachine({ updateAction });
-  console.log('state', { state })
-  const { setValue, handleSubmit, formState: { errors }, getValues, watch } = useForm<FormValues>({
+  const { setValue, handleSubmit, reset, formState: { errors }, getValues, watch } = useForm<FormValues>({
     defaultValues: {
-      repos: state.repos,
+      repos: []
     },
     resolver
   });
 
-  watch('repos')
+  const [{ data, fetching }] = useQuery({
+    query: GithubUsersRepositoriesQuery,
+    variables: {
+      username: state.username
+    },
+    pause: !state.username,
+  })
 
-  const [userRepos, setUserRepos] = useState<GithubRepo[]>([]);
-
-  const onSubmit = (data) => {
-    actions.updateAction(data);
+  const onSubmit = (formData) => {
+    actions.updateAction(formData);
   };
 
   useEffect(() => {
-    async function fetchData() {
-      if (!state.username) {
-        return;
-      }
-
-      getUserRepos(state.username)
-        .then((repos) => sortReposByState(repos, state.repos))
-        .then(setUserRepos)
-        .catch(console.error);
-    }
-
-    fetchData();
-    return;
-  }, [state.repos, state.username])
+    console.log('resetting')
+    reset({
+      repos: state.repos
+    })
+  }, [data?.github?.usersRepositories, reset, state.repos])
 
   const selectedRepos = getValues('repos');
-
-  const visibleOptions = userRepos.filter(({ name }) => selectedRepos.includes(name))
-  const hiddenOptions = userRepos.filter(({ name }) => !selectedRepos.includes(name))
+  watch('repos');
 
   const toggle = useCallback((name: string) => {
-    // when toggling a repo to be selected, need to append to the end of the list, not the beginning
-
     const newSelectedRepos = selectedRepos.includes(name)
-      ? selectedRepos.filter((repoId) => repoId !== name)
+      ? selectedRepos.filter((selectedRepo) => selectedRepo !== name)
       : [...selectedRepos, name];
 
     setValue('repos', newSelectedRepos);
   }, [selectedRepos, setValue])
 
+  if (fetching) {
+    return <div>Loading...</div>;
+  }
+
+  const githubRepos = data?.github?.usersRepositories?.repositories as GithubRepository[];
+
+  const filterSelected = githubRepos.filter(({ nameWithOwner }) => selectedRepos.includes(nameWithOwner))
+  const visibleOptions = sortReposByState(filterSelected, selectedRepos);
+  const hiddenOptions = githubRepos.filter(({ nameWithOwner }) => !selectedRepos.includes(nameWithOwner))
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Button type="submit" block>Set Repos</Button>
+      <Button type="submit" disabled={equals(selectedRepos, state.repos)} variant="primary" block>Set Repos</Button>
       <ActionList selectionVariant="multiple">
         <ActionList.Group title="Select Your Repositories To Display">
           {errors.repos &&
@@ -86,20 +88,19 @@ export const StepTwo = () => {
             </FormControl.Validation>
           }
           {visibleOptions.map(option => (
-            <ActionList.Item key={option.id} selected={true} onSelect={() => toggle(option.name)}>
-              {option.name}
+            <ActionList.Item key={option.id} selected={true} onSelect={() => toggle(option.nameWithOwner)}>
+              {option.nameWithOwner}
             </ActionList.Item>
           ))}
         </ActionList.Group>
         <ActionList.Group
           selectionVariant={
-            /** selectionVariant override on Group: disable selection if there are no options */
             hiddenOptions.length ? 'multiple' : false
           }
         >
           {hiddenOptions.map((option, index) => (
-            <ActionList.Item key={option.id} selected={false} onSelect={() => toggle(option.name)}>
-              {option.name}
+            <ActionList.Item key={option.id} selected={false} onSelect={() => toggle(option.nameWithOwner)}>
+              {option.nameWithOwner}
             </ActionList.Item>
           ))}
         </ActionList.Group>

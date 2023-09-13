@@ -18,20 +18,17 @@ export const Config = () => {
     query: ChannelQuery,
   });
 
-  const username = getUsername(data);
-  const repos = getRepos(data);
-
   useEffect(() => {
-    if (!username || !repos || fetching) {
+    if (fetching) {
       return;
     }
 
     actions.updateAction({
-      username: getUsername(data),
-      repos: getRepos(data),
+      username: getUsername(data) || '',
+      repos: getRepos(data) || [],
       fetching: false,
     });
-  }, [actions, data, fetching, repos, username]);
+  }, [actions, data, fetching]);
 
   if (state.fetching) {
     return <div>Loading...</div>;
@@ -64,13 +61,13 @@ export const Config = () => {
 
               <p className='text-italic'>That's it! You can always come back to select a new username or repository.</p>
             </SplitPageLayout.Header>
-            <SplitPageLayout.Pane resizable padding="condensed">
+            <SplitPageLayout.Pane resizable padding="condensed" width='small'>
               <StepOne />
             </SplitPageLayout.Pane>
-            <SplitPageLayout.Content width="medium" padding="condensed">
+            <SplitPageLayout.Content padding="condensed" width='medium'>
               <StepTwo />
             </SplitPageLayout.Content>
-            <SplitPageLayout.Pane resizable position={'end'} padding="condensed">
+            <SplitPageLayout.Pane position='end' width='large'  sx={{minWidth: 400}} padding='condensed'>
               <StepThree />
             </SplitPageLayout.Pane>
           </SplitPageLayout>

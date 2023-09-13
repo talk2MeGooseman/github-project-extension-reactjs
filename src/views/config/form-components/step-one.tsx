@@ -10,15 +10,19 @@ type FormValues = {
 
 export const StepOne = () => {
   const { actions, state } = useStateMachine({ updateAction });
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
+  const { register, handleSubmit, formState: { errors, isDirty } } = useForm<FormValues>({
     defaultValues: { username: state.username }
   });
   const onSubmit = (data: FormValues) => {
-    actions.updateAction(data);
+    actions.updateAction({
+      username: data.username,
+      repos: []
+    });
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <Button type="submit" sx={{ marginBottom: '1rem' }} block disabled={!isDirty} variant="primary">Set Username</Button>
       <FormControl required>
         <FormControl.Label>
           Your GitHub Username
@@ -37,7 +41,6 @@ export const StepOne = () => {
           Example "talk2megooseman"
         </FormControl.Caption>
       </FormControl>
-      <Button type="submit" sx={{marginTop: '1rem'}} block>Set Username</Button>
     </form>
   )
 }

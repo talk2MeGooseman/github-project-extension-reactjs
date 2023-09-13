@@ -1,66 +1,52 @@
-import { ActionList, Button, Heading } from "@primer/react";
+import { Button, Heading } from "@primer/react";
 import { useStateMachine } from "little-state-machine";
-import { isEmpty, map } from 'ramda';
-import React, { forwardRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import type { GithubRepo, SortableGithubRepo } from "../../../global";
-import { getRepos } from "../../../services/github";
 import { List, UpsertGithubProjectsConfigMutation } from "../../../shared";
 import { updateAction } from "../../../state/update-action";
 import { useMutation } from "urql";
+import React, { useEffect } from 'react'
 
-type FormValues = {
+export type Step3FormValues = {
   username: string;
+  repos: string[];
 };
 
-const SortableActionList = forwardRef<any, any>((props, ref) => {
-  return <ActionList showDividers ref={ref}>{props.children}</ActionList>;
-});
-
 export const StepThree = () => {
-  const [userRepos, setUserRepos] = React.useState<SortableGithubRepo[]>([]);
   const { actions, state } = useStateMachine({ updateAction });
-  const { handleSubmit } = useForm<FormValues>({
-    defaultValues: { username: state.username }
-  });
-  const [updateConfigResult, updateConfig] = useMutation(UpsertGithubProjectsConfigMutation);
-
-  const onSubmit = (data: FormValues) => {
-    const repos = userRepos.map((repo) => repo.name);
-    actions.updateAction({ repos });
-
-    if (!state.username) {
-      return;
+  const { handleSubmit, getValues, setValue, reset, formState: { defaultValues } } = useForm<Step3FormValues>({
+    defaultValues: {
+      username: state.username,
+      repos: state.repos
     }
+  });
+
+  useEffect(() => {
+    if(defaultValues?.repos !== state.repos || defaultValues?.username !== state.username) {
+      reset({
+        username: state.username,
+        repos: state.repos
+      })
+    }
+  }, [defaultValues?.repos, defaultValues?.username, reset, state.repos, state.username]);
+
+  const [_updateConfigResult, updateConfig] = useMutation(UpsertGithubProjectsConfigMutation);
+
+  const onSubmit = (data: Step3FormValues) => {
+    actions.updateAction({ repos: data.repos });
 
     updateConfig({
-       username: state.username,
-       repos: repos,
-    }).then(result => {
-      console.log({result});
+       username: data.username,
+       repos: data.repos,
     });
   };
 
-  useEffect(() => {
-    if (!state.username || isEmpty(state.repos)) {
-      return
-    }
-
-    getRepos(state.username, state.repos)
-      .then(
-        (repos: GithubRepo[]) => repos.sort((a, b) => state.repos.indexOf(a.name) - state.repos.indexOf(b.name))
-      )
-      .then(
-        map((repo: GithubRepo) => ({ ...repo, chosen: false }))
-      )
-      .then(setUserRepos);
-  }, [state.username, state.repos])
+  const repos = getValues('repos');
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Button type="submit" block sx={{marginBottom: '1rem'}}>Save</Button>
+      <Button type="submit" block sx={{marginBottom: '1rem'}} variant="primary">Set Order</Button>
       <Heading sx={{fontSize: 1, mb: 2}}>Drag and drop the repositories to change the order in which they will be displayed.</Heading>
-      <List SortableActionList={SortableActionList} userRepos={userRepos} setUserRepos={setUserRepos} state={state} />
+      <List disableSorting={false} setValue={setValue} repos={repos} username={getValues('username')} />
     </form >
   )
 }

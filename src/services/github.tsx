@@ -1,3 +1,5 @@
+import { GithubRepo } from "../global";
+
 export const getUserRepos = async (username: string): Promise<GithubRepo[]> => {
   const response = await fetch(
     `https://api.github.com/users/${username}/repos`,
