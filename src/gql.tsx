@@ -27,7 +27,7 @@ export type Github = {
 
 
 export type GithubUser = {
-  avatar_url: Scalars['String']['output']
+  avatarUrl: Scalars['String']['output']
   login: Scalars['String']['output']
   name: Scalars['String']['output']
   pronouns: Scalars['String']['output']

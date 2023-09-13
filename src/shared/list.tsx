@@ -7,6 +7,8 @@ import { GlobalState } from "little-state-machine"
 import { isEmpty } from "ramda"
 import { UseFormSetValue } from "react-hook-form"
 import { Step3FormValues } from "../views/config/form-components"
+import { useQuery } from "urql"
+import { GithubUserInfo } from "./graphql"
 
 const SortableActionList = forwardRef<any, any>((props, ref) => {
   return <ActionList showDividers ref={ref}>{props.children}</ActionList>;
@@ -32,8 +34,13 @@ type ListItemFields = {
   nameWithOwner: string;
 }
 
-export const List = ({ setValue = () => {}, repos, username, disableSorting }: ListProps) => {
+export const List = ({ setValue = () => { }, repos, username, disableSorting }: ListProps) => {
   const [userRepos, setUserRepos] = React.useState<ListItemFields[]>([]);
+
+  const [{ data, fetching }] = useQuery({
+    query: GithubUserInfo,
+    variables: { username },
+  })
 
   const updateListState = useCallback((list: ListItemFields[]) => {
     setUserRepos(list);
@@ -62,12 +69,12 @@ export const List = ({ setValue = () => {}, repos, username, disableSorting }: L
         height: 64,
         zIndex: 1,
       }}>
-        <Header.Item>
-          <Header.Link href="#" sx={{ fontSize: 2 }}>
-            <Avatar src="https://avatars.githubusercontent.com/primer" sx={{ mr: 2 }} />
-            <span>{username}</span>
+        {fetching ? <span>Loading...</span> : (<Header.Item>
+          <Header.Link href={data?.github?.user.url} sx={{ fontSize: 2 }}>
+            <Avatar src={data?.github?.user.avatarUrl} size={40} sx={{ mr: 2 }} />
+            <span>{data?.github?.user.login}</span>
           </Header.Link>
-        </Header.Item>
+        </Header.Item>)}
       </Header>
       <PageLayout padding='none'>
         <PageLayout.Content>

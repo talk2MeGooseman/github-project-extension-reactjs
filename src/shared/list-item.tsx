@@ -52,8 +52,8 @@ export const ListItem = ({ name, chosen, sortingDisabled, owner }: ListItemProps
         {description}
       </div>
       <LabelGroup>
-        {languages.map((lang) => <Token key={lang.id} text={lang.name} /> )}
         <Token text={stargazerCount} leadingVisual={StarIcon} />
+        {languages.map((lang) => <Token key={lang.id} text={lang.name} /> )}
       </LabelGroup>
     </ActionList.Description>
   </ItemComponent>);

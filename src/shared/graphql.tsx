@@ -24,6 +24,18 @@ export const UpsertGithubProjectsConfigMutation = gql<RootMutationType, RootMuta
   }
 `
 
+export const GithubUserInfo = gql<RootQueryType>`
+  query GithubUserInfo($username: String!) {
+    github {
+      user(username: $username) {
+        avatarUrl
+        url
+        login
+      }
+    }
+  }
+`
+
 export const GithubUsersRepositoriesQuery = gql<RootQueryType, GithubUsersRepositoriesArgs>`
   query GithubUsersRepositoriesQuery($username: String!) {
     github {
