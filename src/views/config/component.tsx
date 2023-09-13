@@ -55,21 +55,20 @@ export const Config = () => {
                   Select the repositories you want to use and click 'Set Repos'.
                 </Text>
                 <Text as='li'>
-                  In the preview pane, drag and drop the repositories to the order you want them to appear to your viewers and click 'Save'.
+                  In the preview pane, drag and drop the repositories to the order you want them to appear to your viewers and click 'Set Order'.
                 </Text>
               </Text>
 
               <p className='text-italic'>That's it! You can always come back to select a new username or repository.</p>
             </SplitPageLayout.Header>
-            <SplitPageLayout.Pane resizable padding="condensed" width='small'>
+            <SplitPageLayout.Pane resizable width='large'>
               <StepOne />
-            </SplitPageLayout.Pane>
-            <SplitPageLayout.Content padding="condensed" width='medium'>
+              <hr />
               <StepTwo />
-            </SplitPageLayout.Content>
-            <SplitPageLayout.Pane position='end' width='large'  sx={{minWidth: 400}} padding='condensed'>
-              <StepThree />
             </SplitPageLayout.Pane>
+            <SplitPageLayout.Content>
+              <StepThree />
+            </SplitPageLayout.Content>
           </SplitPageLayout>
         </Box>
       </BaseStyles>
