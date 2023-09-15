@@ -1,14 +1,13 @@
-import { Box, Header, Avatar, PageLayout, ActionList } from "@primer/react"
-import React, { useCallback, forwardRef, Dispatch, SetStateAction, useEffect } from "react"
-import { ReactSortable } from "react-sortablejs"
-import { SortableRepo } from "../global"
-import { ListItem } from "./list-item"
+import { ActionList, Avatar, Box, Header, PageLayout } from "@primer/react"
 import { GlobalState } from "little-state-machine"
-import { isEmpty } from "ramda"
+import React, { forwardRef, useCallback, useEffect } from "react"
 import { UseFormSetValue } from "react-hook-form"
-import { Step3FormValues } from "../views/config/form-components"
+import { ReactSortable } from "react-sortablejs"
 import { useQuery } from "urql"
+import { SortableRepo } from "../global"
+import { Step3FormValues } from "../views/config/form-components"
 import { GithubUserInfo } from "./graphql"
+import { ListItem } from "./list-item"
 
 const SortableActionList = forwardRef<any, any>((props, ref) => {
   return <ActionList showDividers ref={ref}>{props.children}</ActionList>;

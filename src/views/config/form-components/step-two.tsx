@@ -71,7 +71,7 @@ export const StepTwo = () => {
     return <div>Loading...</div>;
   }
 
-  const githubRepos = data?.github?.usersRepositories?.repositories as GithubRepository[];
+  const githubRepos = data?.github?.usersRepositories?.repositories || [] as GithubRepository[];
 
   const filterSelected = githubRepos.filter(({ nameWithOwner }) => selectedRepos.includes(nameWithOwner))
   const visibleOptions = sortReposByState(filterSelected, selectedRepos);
