@@ -55,7 +55,7 @@ export const Config = () => {
                   Select the repositories you want to use and click 'Set Repos'.
                 </Text>
                 <Text as='li'>
-                  In the preview pane, drag and drop the repositories to the order you want them to appear to your viewers and click 'Set Order'.
+                  In the preview pane, drag and drop the repositories to the order you want them to appear to your viewers and click 'Save and Display'.
                 </Text>
               </Text>
 

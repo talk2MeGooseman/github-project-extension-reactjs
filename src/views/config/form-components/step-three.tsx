@@ -44,7 +44,7 @@ export const StepThree = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Button type="submit" block sx={{marginBottom: '1rem'}} variant="primary">Set Order</Button>
+      <Button type="submit" block sx={{marginBottom: '1rem'}} variant="primary">Save and Display</Button>
       <Heading sx={{fontSize: 1, mb: 2}}>Drag and drop the repositories to change the order in which they will be displayed.</Heading>
       <List disableSorting={false} setValue={setValue} repos={repos} username={getValues('username')} />
     </form >
