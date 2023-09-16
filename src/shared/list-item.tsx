@@ -1,5 +1,5 @@
 /* eslint-disable primer-react/direct-slot-children */
-import { ActionList, LabelGroup, Token, Truncate } from "@primer/react";
+import { ActionList, LabelGroup, Text, Token, Truncate } from "@primer/react";
 import { RepoIcon, StarIcon } from "@primer/styled-octicons";
 import React from "react";
 import { useQuery } from "urql";
@@ -33,7 +33,8 @@ export const ListItem = ({ name, chosen, sortingDisabled, owner }: ListItemProps
   } = data?.github?.repository ?? {};
 
   return (<ItemComponent
-    href={sortingDisabled ? undefined : url}
+    href={sortingDisabled ? url : undefined}
+    target="_blank" rel="noopener noreferrer"
     active={chosen}
     sx={{
       minHeight: '95px',
@@ -44,16 +45,16 @@ export const ListItem = ({ name, chosen, sortingDisabled, owner }: ListItemProps
     <ActionList.LeadingVisual>
       <RepoIcon />
     </ActionList.LeadingVisual>
-    <Truncate title={name || ""}  sx={{maxWidth: 250}}>
+    <Truncate title={name || ""} sx={{ maxWidth: 250 }}>
       {name}
     </Truncate>
+    <Text as="div" sx={{ color: "fg.muted", fontSize: 0, font: 'status-bar', lineHeight: '16px', my: 1 }}>
+      {description}
+    </Text>
     <ActionList.Description variant='block'>
-      <div>
-        {description}
-      </div>
       <LabelGroup>
         <Token text={stargazerCount} leadingVisual={StarIcon} />
-        {languages.map((lang) => <Token key={lang.id} text={lang.name} /> )}
+        {languages.map((lang) => <Token key={lang.id} text={lang.name} />)}
       </LabelGroup>
     </ActionList.Description>
   </ItemComponent>);

@@ -33,7 +33,7 @@ type ListItemFields = {
   nameWithOwner: string;
 }
 
-export const List = ({ setValue = () => { }, repos, username, disableSorting }: ListProps) => {
+export const List = ({ setValue, repos, username, disableSorting }: ListProps) => {
   const [userRepos, setUserRepos] = React.useState<ListItemFields[]>([]);
 
   const [{ data, fetching }] = useQuery({
@@ -44,7 +44,9 @@ export const List = ({ setValue = () => { }, repos, username, disableSorting }: 
   const updateListState = useCallback((list: ListItemFields[]) => {
     setUserRepos(list);
     const repos = list.map((repo) => repo.nameWithOwner);
-    setValue('repos', repos);
+    if (setValue !== undefined) {
+      setValue('repos', repos);
+    }
   }, [setValue])
 
   useEffect(() => {
@@ -57,7 +59,7 @@ export const List = ({ setValue = () => { }, repos, username, disableSorting }: 
 
   const renderItem = useCallback(
     (repo: SortableRepo) => (
-      <ListItem sortingDisabled={disableSorting} key={repo.id} name={repo.name} owner={repo.owner} chosen={repo.chosen} />
+      <ListItem sortingDisabled={disableSorting} key={repo.id} {...repo} />
     ), [disableSorting])
 
   return (
@@ -69,7 +71,7 @@ export const List = ({ setValue = () => { }, repos, username, disableSorting }: 
         zIndex: 1,
       }}>
         {fetching ? <span>Loading...</span> : (<Header.Item>
-          <Header.Link href={data?.github?.user.url} sx={{ fontSize: 2 }}>
+          <Header.Link href={data?.github?.user.url} sx={{ fontSize: 2 }} target="_blank" rel="noopener noreferrer">
             <Avatar src={data?.github?.user.avatarUrl} size={40} sx={{ mr: 2 }} />
             <span>{data?.github?.user.login}</span>
           </Header.Link>

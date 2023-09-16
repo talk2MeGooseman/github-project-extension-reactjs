@@ -9,7 +9,6 @@ export const Viewer = () => {
   const { state } = useStateMachine({ updateAction });
   useFetchUpdateState();
 
-  console.log('state', state);
   if (state.fetching) {
     return <div>Loading...</div>;
   }
@@ -17,7 +16,7 @@ export const Viewer = () => {
   return (
     <ThemeProvider colorMode="day">
       <BaseStyles>
-        <List disableSorting state={state} />
+        <List disableSorting {...state} />
       </BaseStyles>
     </ThemeProvider>
   )

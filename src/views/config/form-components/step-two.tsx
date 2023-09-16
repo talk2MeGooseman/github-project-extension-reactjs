@@ -50,7 +50,6 @@ export const StepTwo = () => {
   };
 
   useEffect(() => {
-    console.log('resetting')
     reset({
       repos: state.repos
     })
