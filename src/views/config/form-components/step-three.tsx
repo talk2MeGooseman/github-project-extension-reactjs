@@ -1,4 +1,4 @@
-import { Button, Heading } from "@primer/react";
+import { Box, Button, Heading } from "@primer/react";
 import { useStateMachine } from "little-state-machine";
 import { useForm } from "react-hook-form";
 import { List, UpsertGithubProjectsConfigMutation } from "../../../shared";
@@ -21,7 +21,7 @@ export const StepThree = () => {
   });
 
   useEffect(() => {
-    if(defaultValues?.repos !== state.repos || defaultValues?.username !== state.username) {
+    if (defaultValues?.repos !== state.repos || defaultValues?.username !== state.username) {
       reset({
         username: state.username,
         repos: state.repos
@@ -35,8 +35,8 @@ export const StepThree = () => {
     actions.updateAction({ repos: data.repos });
 
     updateConfig({
-       username: data.username,
-       repos: data.repos,
+      username: data.username,
+      repos: data.repos,
     });
   };
 
@@ -44,9 +44,11 @@ export const StepThree = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Button type="submit" block sx={{marginBottom: '1rem'}} variant="primary">Save and Display</Button>
-      <Heading sx={{fontSize: 1, mb: 2}}>Drag and drop the repositories to change the order in which they will be displayed.</Heading>
-      <List disableSorting={false} setValue={setValue} repos={repos} username={getValues('username')} />
+      <Button type="submit" block sx={{ marginBottom: '1rem' }} variant="primary">Save and Display</Button>
+      <Heading sx={{ fontSize: 1, mb: 2 }}>Drag and drop the repositories to change the order in which they will be displayed.</Heading>
+      <Box sx={{ height: 500, width: 318 }}>
+        <List disableSorting={false} setValue={setValue} repos={repos} username={getValues('username')} />
+      </Box>
     </form >
   )
 }

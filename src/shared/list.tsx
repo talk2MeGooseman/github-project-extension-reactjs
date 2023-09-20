@@ -63,7 +63,7 @@ export const List = ({ setValue, repos, username, disableSorting }: ListProps) =
     ), [disableSorting])
 
   return (
-    <Box sx={{ height: 500, width: 318, overflowY: 'auto', border: '1px solid', borderColor: 'border.default' }}>
+    <Box sx={{ height: '100vh', maxHeight: '500px', width: '100%', overflowY: 'auto', border: '1px solid', borderColor: 'border.default' }}>
       <Header sx={{
         position: 'sticky',
         top: 0,
