@@ -1,6 +1,6 @@
-/* eslint-disable primer-react/direct-slot-children */
 import { RepoIcon, StarIcon } from '@primer/octicons-react'
 import { ActionList, LabelGroup, Text, Token, Truncate } from '@primer/react'
+import type { ReactNode } from 'react'
 import { useQuery } from 'urql'
 
 import { GithubRepositoryQuery } from './graphql'
@@ -11,6 +11,12 @@ export type ListItemProps = {
   name: string
   owner: string
   chosen: boolean
+}
+
+type ItemContent = {
+  leadingVisual: ReactNode
+  label: ReactNode
+  description: ReactNode
 }
 
 export const ListItem = ({ name, chosen, sortingDisabled, owner }: ListItemProps) => {
@@ -27,18 +33,21 @@ export const ListItem = ({ name, chosen, sortingDisabled, owner }: ListItemProps
 
   const itemClassName = sortingDisabled ? classes.item : `${classes.item} ${classes.sortableItem}`
 
-  const sharedContent = (
-    <>
-      <ActionList.LeadingVisual>
-        <RepoIcon />
-      </ActionList.LeadingVisual>
+  // Primer v38 extracts ActionList slots (LeadingVisual, Description) only from
+  // DIRECT children of the item — wrapping them in a fragment breaks the layout,
+  // so both branches list them inline.
+  const content: ItemContent = {
+    leadingVisual: <RepoIcon />,
+    label: (
       <Truncate title={name || ''} maxWidth={250}>
         {name}
       </Truncate>
-      <Text as="div" className={classes.description}>
-        {description}
-      </Text>
-      <ActionList.Description variant="block">
+    ),
+    description: (
+      <>
+        <Text as="div" className={classes.description}>
+          {description}
+        </Text>
         <LabelGroup>
           <Token text={stargazerCount} leadingVisual={StarIcon} />
           {(languages ?? [])
@@ -47,9 +56,9 @@ export const ListItem = ({ name, chosen, sortingDisabled, owner }: ListItemProps
               <Token key={lang.id} text={lang.name} />
             ))}
         </LabelGroup>
-      </ActionList.Description>
-    </>
-  )
+      </>
+    ),
+  }
 
   if (sortingDisabled) {
     return (
@@ -60,14 +69,18 @@ export const ListItem = ({ name, chosen, sortingDisabled, owner }: ListItemProps
         active={chosen}
         className={itemClassName}
       >
-        {sharedContent}
+        <ActionList.LeadingVisual>{content.leadingVisual}</ActionList.LeadingVisual>
+        {content.label}
+        <ActionList.Description variant="block">{content.description}</ActionList.Description>
       </ActionList.LinkItem>
     )
   }
 
   return (
     <ActionList.Item active={chosen} className={itemClassName}>
-      {sharedContent}
+      <ActionList.LeadingVisual>{content.leadingVisual}</ActionList.LeadingVisual>
+      {content.label}
+      <ActionList.Description variant="block">{content.description}</ActionList.Description>
     </ActionList.Item>
   )
 }

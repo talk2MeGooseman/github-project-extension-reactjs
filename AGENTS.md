@@ -101,6 +101,9 @@ generated folder is wired up.
   gone). Component-specific styles live in CSS modules (`list.module.css`,
   `form.module.css`) using Primer design-token CSS variables
   (`--borderColor-default`, `--fgColor-muted`, `--base-size-*`, …).
+- v38 extracts `ActionList` slots (`LeadingVisual`, `Description`) only from
+  **direct children** of an item — wrapping them in a fragment silently dumps
+  everything into the label and stacks the layout (see `list-item.tsx`).
 - The multi-select repo list (`step-two.tsx`) needs
   `role="listbox"` on `ActionList` — without a list role, v38 renders the
   checkboxes but never applies `aria-selected`, so items never *look*

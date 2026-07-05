@@ -32,7 +32,6 @@
 
 .description {
   color: var(--fgColor-muted);
-  font-size: var(--text-body-size-small, 12px);
-  line-height: 16px;
-  margin: var(--base-size-4, 4px) 0;
+  font-size: var(--text-body-size-medium, 14px);
+  margin-bottom: var(--base-size-4, 4px);
 }
