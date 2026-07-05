@@ -19,8 +19,12 @@ export const setQueryResult = (query: unknown, result: QueryResult) => {
   results.set(query, result)
 }
 
+/** Shared spy for the execute function returned by useMutation. */
+export const mutationSpy = vi.fn(async () => ({ data: {} }))
+
 export const resetQueryResults = () => {
   results.clear()
+  mutationSpy.mockClear()
 }
 
 export const mockedUseQuery = ({ query }: { query: unknown }) => {
@@ -28,4 +32,4 @@ export const mockedUseQuery = ({ query }: { query: unknown }) => {
   return [{ ...result }, vi.fn()] as const
 }
 
-export const mockedUseMutation = () => [{}, vi.fn()] as const
+export const mockedUseMutation = () => [{}, mutationSpy] as const

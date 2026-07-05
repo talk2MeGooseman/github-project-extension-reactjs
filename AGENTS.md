@@ -30,6 +30,7 @@ npm run preview        # serve the production build locally
 npm run typecheck      # tsc --noEmit (strict mode)
 npm test               # vitest run (jsdom + Testing Library, test/*.test.tsx)
 npm run test:watch     # vitest in watch mode
+npm run test:coverage  # vitest with V8 coverage; thresholds enforced (CI runs this)
 npm run lint           # ESLint 9 flat config (eslint.config.js)
 npm run lint:fix       # ESLint with --fix
 npm run format         # Prettier 3
@@ -39,11 +40,16 @@ npm run codegen        # GraphQL codegen — requires the Elixir backend running
 
 - Tests are **Vitest + Testing Library** in `test/` (config lives in the
   `test` block of `vite.config.ts`; jsdom environment, browser API stubs in
-  `test/setup.ts`). They are regression guards for real bugs — each one fails
-  if its fix is reverted (stuck loading states, dead links on failed lookups,
-  `aria-selected` requiring `role="listbox"`, urql being pinned to POST).
-  urql is mocked per query document via `test/urql-mock.ts`. Keep this suite
-  green and add a pinning test when fixing any user-visible bug.
+  `test/setup.ts`). Coverage is ~100% statements / ~95% branches of `src/**`,
+  with CI-enforced thresholds (90/80/90/90) via `npm run test:coverage`.
+  The suite is behavior-driven: regression guards that fail if their fix is
+  reverted (stuck loading states, dead links on failed lookups,
+  `aria-selected` requiring `role="listbox"`, urql pinned to POST), wizard
+  interaction flows (submit/validation/toggle → store or mutation), and
+  null-tolerance cases for the schema's `Maybe` fields. urql is mocked per
+  query document via `test/urql-mock.ts`; assert store contents with
+  `test/store-probe.tsx`. Keep the suite green and add a pinning test when
+  fixing any user-visible bug.
 - Linting no longer runs inside the Vite dev server (the old
   `vite-plugin-eslint` was dropped with the ESLint 9 migration) — run
   `npm run lint` / `npm run typecheck` yourself before committing.

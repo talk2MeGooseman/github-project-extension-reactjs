@@ -73,4 +73,27 @@ describe('ListItem', () => {
     expect(screen.getByText('repo-a')).toBeInTheDocument()
     expect(screen.queryByRole('link')).not.toBeInTheDocument()
   })
+
+  it('tolerates null metadata fields from the backend', () => {
+    // Every repository field is nullable in the schema — missing description,
+    // languages, and star count must not crash the item.
+    setQueryResult(GithubRepositoryQuery, {
+      fetching: false,
+      data: {
+        github: {
+          repository: {
+            ...repository,
+            description: null,
+            languages: null,
+            stargazerCount: null,
+          },
+        },
+      },
+    })
+
+    renderItem(true)
+
+    expect(screen.getByText('repo-a')).toBeInTheDocument()
+    expect(screen.getByRole('link')).toHaveAttribute('href', 'https://github.com/me/repo-a')
+  })
 })

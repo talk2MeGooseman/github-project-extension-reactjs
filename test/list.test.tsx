@@ -28,6 +28,14 @@ beforeEach(() => {
 })
 
 describe('List header', () => {
+  it('shows loading while the user lookup is in flight', () => {
+    setQueryResult(GithubUserInfo, { fetching: true })
+
+    render(<List disableSorting username="gooseman" repos={['me/repo-a']} />)
+
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
+  })
+
   it('links to the GitHub user when the lookup succeeds', () => {
     setQueryResult(GithubUserInfo, {
       fetching: false,

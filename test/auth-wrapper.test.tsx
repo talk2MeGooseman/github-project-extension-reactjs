@@ -31,6 +31,20 @@ beforeEach(() => {
 })
 
 describe('AuthWrapper GraphQL client', () => {
+  it('shows loading until Twitch authorizes the extension', () => {
+    window.Twitch = { ext: { onAuthorized: () => undefined } }
+
+    render(
+      <AuthWrapper>
+        <Probe />
+      </AuthWrapper>,
+    )
+
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
+    expect(screen.queryByText(/probe-/)).not.toBeInTheDocument()
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
   it('sends queries as POST with the Twitch JWT header', async () => {
     // Regression: urql v5 defaults queries to GET requests, but the Phoenix
     // backend serves POST /api — the client must pin preferGetMethod: false.

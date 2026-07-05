@@ -19,5 +19,16 @@ export default defineConfig({
         inline: [/@primer\//],
       },
     },
+    coverage: {
+      include: ['src/**'],
+      // Thresholds sit below current coverage (~97% stmts / ~91% branches) so
+      // they catch untested new code without failing on measurement jitter.
+      thresholds: {
+        statements: 90,
+        branches: 80,
+        functions: 90,
+        lines: 90,
+      },
+    },
   },
 })

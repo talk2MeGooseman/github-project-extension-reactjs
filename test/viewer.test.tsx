@@ -18,6 +18,14 @@ beforeEach(() => {
 })
 
 describe('Viewer', () => {
+  it('shows loading while the channel query is in flight', () => {
+    setQueryResult(ChannelQuery, { fetching: true })
+
+    render(<Viewer />)
+
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
+  })
+
   it('tells the viewer when the channel has no config instead of loading forever', async () => {
     // Regression: an unconfigured channel (githubProjectsConfig: null) used to
     // leave state.fetching true and spin on "Loading..." indefinitely.
@@ -87,5 +95,26 @@ describe('Viewer', () => {
     expect(await screen.findByText('repo-a')).toBeInTheDocument()
     expect(screen.getByText('a fine repo')).toBeInTheDocument()
     expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
+  })
+
+  it('drops null repo entries from the channel config without crashing', async () => {
+    // repos is Maybe<Array<Maybe<String>>> in the schema — null entries from
+    // the backend must be filtered before they reach the list.
+    setQueryResult(ChannelQuery, {
+      fetching: false,
+      data: {
+        channel: {
+          githubProjectsConfig: { id: '1', username: 'gooseman', repos: ['me/repo-a', null] },
+          channelId: '123',
+        },
+      },
+    })
+    setQueryResult(GithubUserInfo, { fetching: false, error: { message: 'nope' } })
+    setQueryResult(GithubRepositoryQuery, { fetching: false, error: { message: 'nope' } })
+
+    render(<Viewer />)
+
+    expect(await screen.findByText('repo-a')).toBeInTheDocument()
+    expect(screen.getAllByRole('listitem')).toHaveLength(1)
   })
 })
