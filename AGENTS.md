@@ -28,6 +28,8 @@ npm run vite:start     # plain `vite` (default port from vite.config.ts: 8080)
 npm run build          # production build → dist/
 npm run preview        # serve the production build locally
 npm run typecheck      # tsc --noEmit (strict mode)
+npm test               # vitest run (jsdom + Testing Library, test/*.test.tsx)
+npm run test:watch     # vitest in watch mode
 npm run lint           # ESLint 9 flat config (eslint.config.js)
 npm run lint:fix       # ESLint with --fix
 npm run format         # Prettier 3
@@ -35,7 +37,13 @@ npm run codegen        # GraphQL codegen — requires the Elixir backend running
                        # locally at http://0.0.0.0:4000/api (see codegen.ts)
 ```
 
-- There are **no tests** in this repo.
+- Tests are **Vitest + Testing Library** in `test/` (config lives in the
+  `test` block of `vite.config.ts`; jsdom environment, browser API stubs in
+  `test/setup.ts`). They are regression guards for real bugs — each one fails
+  if its fix is reverted (stuck loading states, dead links on failed lookups,
+  `aria-selected` requiring `role="listbox"`, urql being pinned to POST).
+  urql is mocked per query document via `test/urql-mock.ts`. Keep this suite
+  green and add a pinning test when fixing any user-visible bug.
 - Linting no longer runs inside the Vite dev server (the old
   `vite-plugin-eslint` was dropped with the ESLint 9 migration) — run
   `npm run lint` / `npm run typecheck` yourself before committing.
@@ -121,6 +129,7 @@ generated folder is wired up.
 ## CI / Release
 
 `.github/workflows/pre-release.yml` runs on push to `master`: Node 22 +
-`npm ci` → `npm run typecheck` → `npm run lint` → `npm run build` → zips
-`dist/` → publishes an automatic GitHub **prerelease** tagged `latest`. The
-zip is what gets uploaded to the Twitch extension console.
+`npm ci` → `npm run typecheck` → `npm run lint` → `npm test` →
+`npm run build` → zips `dist/` → publishes an automatic GitHub
+**prerelease** tagged `latest`. The zip is what gets uploaded to the Twitch
+extension console.

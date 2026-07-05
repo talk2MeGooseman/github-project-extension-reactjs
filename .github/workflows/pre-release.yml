@@ -22,6 +22,8 @@ jobs:
         run: npm run typecheck
       - name: Lint
         run: npm run lint
+      - name: Test
+        run: npm test
       - name: Build app
         run: npm run build
       - name: Zip Release Build

@@ -17,6 +17,7 @@ npm install        # install dependencies
 npm start          # dev server on port 8080 (host 0.0.0.0)
 npm run build      # production build → dist/
 npm run typecheck  # tsc --noEmit
+npm test           # vitest run
 npm run lint       # ESLint (flat config)
 npm run format     # Prettier
 ```

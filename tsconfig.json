@@ -16,5 +16,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "codegen.ts", "vite.config.ts"]
+  "include": ["src", "test", "codegen.ts", "vite.config.ts"]
 }
