@@ -1,0 +1,13 @@
+.submitButton {
+  margin-bottom: 1rem;
+}
+
+.orderHeading {
+  font-size: var(--text-body-size-medium, 14px);
+  margin-bottom: var(--base-size-8, 8px);
+}
+
+.listContainer {
+  height: 500px;
+  width: 318px;
+}

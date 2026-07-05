@@ -1,33 +1,32 @@
-import { useStateMachine } from "little-state-machine";
-import { dotPath } from "ramda-extension";
-import { useEffect } from "react";
-import { useQuery } from "urql";
-import { updateAction } from "../state/update-action";
-import { ChannelQuery } from "./graphql";
+import { useStateMachine } from 'little-state-machine'
+import { useEffect } from 'react'
+import { useQuery } from 'urql'
 
-const getUsername = dotPath('channel.githubProjectsConfig.username');
-const getRepos = dotPath('channel.githubProjectsConfig.repos');
+import { updateAction } from '../state/update-action'
+import { ChannelQuery } from './graphql'
 
 export const useFetchUpdateState = () => {
-  const { actions, state } = useStateMachine({ updateAction });
+  const { actions, state } = useStateMachine({ actions: { updateAction } })
   const [{ data, error, fetching }] = useQuery({
     query: ChannelQuery,
-  });
+  })
 
-  const username = getUsername(data);
-  const repos = getRepos(data);
+  const username = data?.channel?.githubProjectsConfig?.username
+  const repos = data?.channel?.githubProjectsConfig?.repos
 
   useEffect(() => {
-    if (!username || !repos || fetching) {
-      return;
+    if (fetching) {
+      return
     }
 
+    // Clear the loading state even when the channel has no config yet,
+    // so unconfigured channels don't spin on "Loading..." forever.
     actions.updateAction({
-      username: getUsername(data),
-      repos: getRepos(data),
+      username: username ?? '',
+      repos: (repos ?? []).filter((repo) => repo != null),
       fetching: false,
-    });
-  }, [actions, data, fetching, repos, username]);
+    })
+  }, [actions, fetching, repos, username])
 
-  return { error, fetching, state };
+  return { error, fetching, state }
 }
