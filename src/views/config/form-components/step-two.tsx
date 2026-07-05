@@ -29,7 +29,9 @@ const resolver: Resolver<FormValues> = async (values): Promise<ResolverResult<Fo
   return { values, errors: {} }
 }
 
-const sameMembers = (a: string[], b: string[]) =>
+// Order-sensitive on purpose: it mirrors the deep equality the saved config
+// is compared with, and repo order is meaningful downstream (step three).
+const arraysEqualInOrder = (a: string[], b: string[]) =>
   a.length === b.length && a.every((value, index) => value === b[index])
 
 export const StepTwo = () => {
@@ -95,7 +97,12 @@ export const StepTwo = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Button type="submit" disabled={sameMembers(selectedRepos, state.repos)} variant="primary" block>
+      <Button
+        type="submit"
+        disabled={arraysEqualInOrder(selectedRepos, state.repos)}
+        variant="primary"
+        block
+      >
         Set Repos
       </Button>
       <ActionList selectionVariant="multiple" role="listbox" aria-label="Your GitHub repositories">

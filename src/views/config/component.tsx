@@ -55,8 +55,8 @@ export const Config = () => {
               </Text>
             </Text>
 
-            <p className="text-italic">
-              That's it! You can always come back to select a new username or repository.
+            <p>
+              <em>That's it! You can always come back to select a new username or repository.</em>
             </p>
           </SplitPageLayout.Header>
           <SplitPageLayout.Pane resizable width="large">
