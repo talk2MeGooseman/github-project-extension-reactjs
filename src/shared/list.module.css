@@ -1,0 +1,38 @@
+.scrollContainer {
+  height: 100vh;
+  max-height: 500px;
+  width: 100%;
+  overflow-y: auto;
+  border: var(--borderWidth-thin, 1px) solid var(--borderColor-default);
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  height: 64px;
+  z-index: 1;
+}
+
+.headerLink {
+  font-size: var(--text-body-size-large, 16px);
+}
+
+.avatar {
+  margin-right: var(--base-size-8, 8px);
+}
+
+.item {
+  min-height: 95px;
+}
+
+.sortableItem {
+  cursor: move;
+  user-select: none;
+}
+
+.description {
+  color: var(--fgColor-muted);
+  font-size: var(--text-body-size-small, 12px);
+  line-height: 16px;
+  margin: var(--base-size-4, 4px) 0;
+}

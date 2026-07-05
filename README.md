@@ -4,7 +4,22 @@ https://www.twitch.tv/ext/yncbd7i177on3ia536r307nlvt8g1w-0.0.1
 
 ## Dependent Backend Repo
 
-https://github.com/talk2MeGooseman/github-project-extension-firebase
+https://github.com/talk2MeGooseman/guzman_app_elixir — the extension talks to
+its GraphQL API (`https://guzman.codes/api`).
+
+## Development
+
+Built with React 19, TypeScript, Vite, Primer React, and urql. Requires
+Node.js >= 20.19.
+
+```bash
+npm install        # install dependencies
+npm start          # dev server on port 8080 (host 0.0.0.0)
+npm run build      # production build → dist/
+npm run typecheck  # tsc --noEmit
+npm run lint       # ESLint (flat config)
+npm run format     # Prettier
+```
 
 ## Description
 

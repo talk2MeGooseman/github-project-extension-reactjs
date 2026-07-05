@@ -1,26 +1,26 @@
-import React, { useEffect, useState } from 'react'
-import { AuthContext } from './auth-context';
-import { Client, Provider, cacheExchange, fetchExchange } from 'urql';
-import { StateMachineProvider, createStore } from 'little-state-machine';
+import { createStore } from 'little-state-machine'
+import { type ReactNode, useEffect, useState } from 'react'
+import { cacheExchange, Client, fetchExchange, Provider } from 'urql'
 
-type StateType = {
-  loading: boolean
-  channelId?: string
-  client?: Client
-}
+import { AuthContext } from './auth-context'
 
-createStore({
-  username: '',
-  repos: [],
-  fetching: true
-},
+type AuthState =
+  | { loading: true }
+  | { loading: false; channelId: string; client: Client }
+
+createStore(
   {
-    persist: 'none'
+    username: '',
+    repos: [],
+    fetching: true,
   },
-);
+  {
+    persist: 'none',
+  },
+)
 
-const AuthWrapper = ({ children, mode }) => {
-  const [authData, setAuthData] = useState<StateType>({
+const AuthWrapper = ({ children }: { children: ReactNode }) => {
+  const [authData, setAuthData] = useState<AuthState>({
     loading: true,
   })
 
@@ -28,13 +28,15 @@ const AuthWrapper = ({ children, mode }) => {
     window.Twitch.ext.onAuthorized((auth) => {
       const client = new Client({
         url: 'https://guzman.codes/api',
+        // urql v5 defaults queries to GET requests; the Phoenix backend serves POST /api.
+        preferGetMethod: false,
         exchanges: [cacheExchange, fetchExchange],
         fetchOptions: () => {
           return {
             headers: { 'x-extension-jwt': auth.token },
-          };
+          }
         },
-      });
+      })
 
       setAuthData({
         loading: false,
@@ -42,7 +44,6 @@ const AuthWrapper = ({ children, mode }) => {
         channelId: auth.channelId,
       })
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (authData.loading) {
@@ -50,13 +51,9 @@ const AuthWrapper = ({ children, mode }) => {
   }
 
   return (
-    <StateMachineProvider>
-      <AuthContext.Provider value={authData}>
-        <Provider value={authData.client}>
-          {children}
-        </Provider>
-      </AuthContext.Provider>
-    </StateMachineProvider>
+    <AuthContext.Provider value={{ loading: false, channelId: authData.channelId }}>
+      <Provider value={authData.client}>{children}</Provider>
+    </AuthContext.Provider>
   )
 }
 
