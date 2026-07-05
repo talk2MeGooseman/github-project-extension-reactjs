@@ -15,13 +15,15 @@ export const useFetchUpdateState = () => {
   const repos = data?.channel?.githubProjectsConfig?.repos
 
   useEffect(() => {
-    if (!username || !repos || fetching) {
+    if (fetching) {
       return
     }
 
+    // Clear the loading state even when the channel has no config yet,
+    // so unconfigured channels don't spin on "Loading..." forever.
     actions.updateAction({
-      username,
-      repos: repos.filter((repo) => repo != null),
+      username: username ?? '',
+      repos: (repos ?? []).filter((repo) => repo != null),
       fetching: false,
     })
   }, [actions, fetching, repos, username])

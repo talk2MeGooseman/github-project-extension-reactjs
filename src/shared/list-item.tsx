@@ -20,16 +20,20 @@ type ItemContent = {
 }
 
 export const ListItem = ({ name, chosen, sortingDisabled, owner }: ListItemProps) => {
-  const [{ data, fetching, error }] = useQuery({
+  const [{ data, fetching }] = useQuery({
     query: GithubRepositoryQuery,
     variables: { name, owner },
   })
 
-  if (fetching || error) {
+  if (fetching) {
     return <div>Loading...</div>
   }
 
-  const { description, url, languages, stargazerCount } = data?.github?.repository ?? {}
+  // On error (or missing data) fall through and render the item with just the
+  // repo name — an item-level fetch failure shouldn't hide the repo entirely
+  // or leave a stuck "Loading..." row.
+  const repository = data?.github?.repository
+  const { description, url, languages, stargazerCount } = repository ?? {}
 
   const itemClassName = sortingDisabled ? classes.item : `${classes.item} ${classes.sortableItem}`
 
@@ -43,7 +47,7 @@ export const ListItem = ({ name, chosen, sortingDisabled, owner }: ListItemProps
         {name}
       </Truncate>
     ),
-    description: (
+    description: repository ? (
       <>
         <Text as="div" className={classes.description}>
           {description}
@@ -57,7 +61,7 @@ export const ListItem = ({ name, chosen, sortingDisabled, owner }: ListItemProps
             ))}
         </LabelGroup>
       </>
-    ),
+    ) : null,
   }
 
   if (sortingDisabled) {
@@ -71,7 +75,9 @@ export const ListItem = ({ name, chosen, sortingDisabled, owner }: ListItemProps
       >
         <ActionList.LeadingVisual>{content.leadingVisual}</ActionList.LeadingVisual>
         {content.label}
-        <ActionList.Description variant="block">{content.description}</ActionList.Description>
+        {content.description && (
+          <ActionList.Description variant="block">{content.description}</ActionList.Description>
+        )}
       </ActionList.LinkItem>
     )
   }
@@ -80,7 +86,9 @@ export const ListItem = ({ name, chosen, sortingDisabled, owner }: ListItemProps
     <ActionList.Item active={chosen} className={itemClassName}>
       <ActionList.LeadingVisual>{content.leadingVisual}</ActionList.LeadingVisual>
       {content.label}
-      <ActionList.Description variant="block">{content.description}</ActionList.Description>
+      {content.description && (
+        <ActionList.Description variant="block">{content.description}</ActionList.Description>
+      )}
     </ActionList.Item>
   )
 }

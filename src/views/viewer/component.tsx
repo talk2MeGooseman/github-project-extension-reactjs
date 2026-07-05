@@ -7,10 +7,18 @@ import { updateAction } from '../../state/update-action'
 
 export const Viewer = () => {
   const { state } = useStateMachine({ actions: { updateAction } })
-  useFetchUpdateState()
+  const { error } = useFetchUpdateState()
 
   if (state.fetching) {
     return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>
+  }
+
+  if (!state.username) {
+    return <div>This channel hasn't configured any repositories to display yet.</div>
   }
 
   return (
