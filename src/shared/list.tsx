@@ -85,17 +85,21 @@ export const List = ({ setValue, repos, username, disableSorting }: ListProps) =
       <Header className={classes.header}>
         {fetching ? (
           <span>Loading...</span>
-        ) : (
+        ) : data?.github?.user ? (
           <Header.Item>
             <Header.Link
-              href={data?.github?.user?.url}
+              href={data.github.user.url ?? undefined}
               className={classes.headerLink}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Avatar src={data?.github?.user?.avatarUrl ?? ''} size={40} className={classes.avatar} />
-              <span>{data?.github?.user?.login}</span>
+              <Avatar src={data.github.user.avatarUrl ?? ''} size={40} className={classes.avatar} />
+              <span>{data.github.user.login}</span>
             </Header.Link>
+          </Header.Item>
+        ) : (
+          <Header.Item>
+            <span className={classes.headerLink}>{username}</span>
           </Header.Item>
         )}
       </Header>

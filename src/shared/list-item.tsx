@@ -64,10 +64,12 @@ export const ListItem = ({ name, chosen, sortingDisabled, owner }: ListItemProps
     ) : null,
   }
 
-  if (sortingDisabled) {
+  // Only render a link when there is a URL to link to — an errored lookup
+  // falls back to the plain (non-link) item below.
+  if (sortingDisabled && url) {
     return (
       <ActionList.LinkItem
-        href={url ?? undefined}
+        href={url}
         target="_blank"
         rel="noopener noreferrer"
         active={chosen}
